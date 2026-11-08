@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор ПСЭС | С любовью от Лобанова ♥</title>
+    <title>Калькулятор ПСЭС | с Любовью от Лабанова ♥</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -51,6 +51,26 @@
             cursor: pointer;
             font-weight: bold;
             border: 1px solid #5865f2;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #232428;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            user-select: none;
         }
         .grid-2 {
             display: grid;
@@ -153,7 +173,7 @@
 <body>
 
 <div class="container">
-    <h1>📊 Калькулятор баллов ПСЭС (С Любовью от Лобанова ♥)</h1>
+    <h1>📊 Калькулятор баллов ПСЭС (с Любовью от Лабанова ♥)</h1>
     
     <div class="form-group">
         <label style="color: #5865f2;">Выберите цель отчета / ранг:</label>
@@ -181,6 +201,11 @@
         </div>
     </div>
 
+    <div class="checkbox-group">
+        <input type="checkbox" id="isInstructor" onchange="calculatePoints()">
+        <label for="isInstructor" style="color: #fee75c;">Сотрудник является инструктором</label>
+    </div>
+
     <hr style="border: 0; border-top: 1px solid #3f4147; margin: 20px 0;">
 
     <div class="form-group">
@@ -203,8 +228,20 @@
             <input type="number" id="vaccine" value="0" min="0" oninput="calculatePoints()">
         </div>
         <div class="form-group">
-            <label>Гос. проверки (кол-во):</label>
+            <label style="color: #fee75c;">Гос. проверки (кол-во):</label>
             <input type="number" id="audit" value="0" min="0" oninput="calculatePoints()">
+        </div>
+    </div>
+
+    <!-- Инструкторский блок полей (Показывается только если стоит галочка) -->
+    <div class="grid-2" id="instructorBlock" style="display: none;">
+        <div class="form-group">
+            <label>Выдача квалиф. терапевта:</label>
+            <input type="number" id="therapistQual" value="0" min="0" oninput="calculatePoints()">
+        </div>
+        <div class="form-group">
+            <label>Проверка отчетов повыш.:</label>
+            <input type="number" id="promoCheck" value="0" min="0" oninput="calculatePoints()">
         </div>
     </div>
 
@@ -245,35 +282,3 @@
         <div id="statusText" class="status fail">Отчет не сдан</div>
         <div style="font-size: 14px; background: #232428; padding: 10px; border-radius: 4px;">
             <div style="margin: 3px 0;">✨ Всего баллов: <strong id="totalPointsDisplay">0</strong> / <span id="normaDisplay">0</span></div>
-            <div style="margin: 3px 0;" id="medsRow">📋 Всего справок: <strong id="totalMedsDisplay">0</strong> / <span id="normaMedsDisplay">0</span></div>
-            <div style="margin: 3px 0;" id="timeRow">⏱ Время на посту: <strong id="totalTimeDisplay">0</strong> / <span id="normaTimeDisplay">0</span> мин.</div>
-            <div style="margin: 3px 0;" id="auditRow">🏢 Гос. проверки: <strong id="totalAuditsDisplay">0</strong> / <span id="normaAuditsDisplay">0</span></div>
-        </div>
-        
-        <label style="margin-top: 15px;">Готовый текст для Discord:</label>
-        <textarea id="discordOutput" readonly></textarea>
-        
-        <button id="copyBtn" class="btn-submit" onclick="copyToClipboard()">📋 Скопировать отчет</button>
-    </div>
-</div>
-
-<script>
-    const POINT_RATES = {
-        medDay: 4,       
-        medNight: 6,
-        medPromoDefault: 4, // Базовая ставка за справку при повышении      
-        vaccine: 3,      
-        pmp: 3,          
-        pills: 1,        
-        audit: 50        
-    };
-
-    const TARGET_REQUIREMENTS = {
-        weekly_report: { 
-            name: "Еженедельный отчет", 
-            points: 600, meds: 0, time: 0, audits: 0, exam: "Не требуется", isWeekly: true 
-        },
-        rank_5_6: { 
-            name: "Повышение с 5-го на 6-й ранг", 
-            points: 100, meds: 30, time: 30, audits: 1, exam: "«Социофобия»", isWeekly: false 
-        },
