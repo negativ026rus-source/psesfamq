@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Умный калькулятор ПСЭС | Majestic RP</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1f22;
+            color: #dbdee1;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #2b2d31;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #1e1f22;
+            border-radius: 4px;
+            background-color: #383a40;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        select {
+            cursor: pointer;
+            font-weight: bold;
+            border: 1px solid #5865f2;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .duty-input-wrapper {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .btn-action {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-add {
+            background-color: #5865f2;
+            color: white;
+        }
+        .btn-add:hover { background-color: #4752c4; }
+        .btn-remove {
+            background-color: #da373c;
+            color: white;
+        }
+        .btn-remove:hover { background-color: #a92b2f; }
+        .result-box {
+            background-color: #111214;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            border-left: 5px solid #5865f2;
+        }
+        .status {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        .status.success { color: #23a55a; }
+        .status.fail { color: #f23f43; }
+        textarea {
+            width: 100%;
+            height: 260px;
+            background-color: #2b2d31;
+            color: #dbdee1;
+            border: 1px solid #4e5058;
+            border-radius: 4px;
+            padding: 10px;
+            resize: none;
+            box-sizing: border-box;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background-color: #4752c4; }
+        .btn-submit.copied { background-color: #23a55a; }
+        .info-badge {
+            background-color: #35373c;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            border-left: 3px solid #5865f2;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Калькулятор баллов ПСЭС (Majestic RP)</h1>
+    
+    <div class="form-group">
+        <label style="color: #5865f2;">Выберите цель отчета / ранг:</label>
+        <select id="reportTarget" onchange="calculatePoints()">
+            <option value="weekly_report" selected>Еженедельный отчет (600 баллов)</option>
+            <option value="rank_5_6">Повышение с 5-го на 6-й ранг (100 баллов)</option>
+            <option value="rank_6_7">Повышение с 6-го на 7-й ранг (350 баллов)</option>
+            <option value="rank_7_8">Повышение с 7-го на 8-й ранг (400 баллов)</option>
+            <option value="rank_8_9">Повышение с 8-го на 9-й ранг (450 баллов)</option>
+        </select>
+    </div>
+
+    <div id="targetInfo" class="info-badge">
+        Загрузка требований...
+    </div>
+    
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Имя Фамилия:</label>
+            <input type="text" id="username" placeholder="Ivan Ivanov" oninput="calculatePoints()">
+        </div>
+        <div class="form-group">
+            <label>Статический ID:</label>
+            <input type="text" id="staticId" placeholder="#12345" oninput="calculatePoints()">
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #3f4147; margin: 20px 0;">
+
+    <div class="form-group">
+        <label>Дежурства (минуты):</label>
+        <div id="dutyContainer">
+            <div class="duty-input-wrapper">
+                <input type="number" class="duty-input" value="0" min="0" oninput="calculatePoints()">
+                <button type="button" class="btn-action btn-add" onclick="addDutyField()">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Вакцинации (кол-во):</label>
+            <input type="number" id="vaccine" value="0" min="0" oninput="calculatePoints()">
+        </div>
+        <div class="form-group">
+            <label>Гос. проверки (кол-во):</label>
+            <input type="number" id="audit" value="0" min="0" oninput="calculatePoints()">
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Справки ДЕНЬ (кол-во):</label>
+            <input type="number" id="medDay" value="0" min="0" oninput="calculatePoints()">
+        </div>
+        <div class="form-group">
+            <label>Справки НОЧЬ (кол-во):</label>
+            <input type="number" id="medNight" value="0" min="0" oninput="calculatePoints()">
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Первая помощь ПМП (кол-во):</label>
+            <input type="number" id="pmp" value="0" min="0" oninput="calculatePoints()">
+        </div>
+        <div class="form-group">
+            <label>Выданные таблетки (кол-во):</label>
+            <input type="number" id="pills" value="0" min="0" oninput="calculatePoints()">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label style="color: #5865f2;">Доп. Баллы (поощрения):</label>
+        <input type="number" id="extraPoints" value="0" min="0" oninput="calculatePoints()">
+    </div>
+
+    <div class="result-box">
+        <div id="statusText" class="status fail">Отчет не сдан</div>
+        <div style="font-size: 14px; background: #232428; padding: 10px; border-radius: 4px;">
+            <div style="margin: 3px 0;">✨ Всего баллов: <strong id="totalPointsDisplay">0</strong> / <span id="normaDisplay">0</span></div>
+            <div style="margin: 3px 0;" id="medsRow">📋 Всего справок: <strong id="totalMedsDisplay">0</strong> / <span id="normaMedsDisplay">0</span></div>
+            <div style="margin: 3px 0;" id="timeRow">⏱ Время на посту: <strong id="totalTimeDisplay">0</strong> / <span id="normaTimeDisplay">0</span> мин.</div>
+            <div style="margin: 3px 0;" id="auditRow">🏢 Гос. проверки: <strong id="totalAuditsDisplay">0</strong> / <span id="normaAuditsDisplay">0</span></div>
+        </div>
+        
+        <label style="margin-top: 15px;">Готовый текст для Discord:</label>
+        <textarea id="discordOutput" readonly></textarea>
+        
+        <button id="copyBtn" class="btn-submit" onclick="copyToClipboard()">📋 Скопировать отчет</button>
+    </div>
+</div>
+
+<script>
+    const POINT_RATES = {
+        medDay: 4,       
+        medNight: 6,     
+        vaccine: 3,      
+        pmp: 3,          
+        pills: 1,        
+        audit: 50        
+    };
+
+    const TARGET_REQUIREMENTS = {
+        weekly_report: { 
+            name: "Еженедельный отчет", 
+            points: 600, meds: 0, time: 0, audits: 0, exam: "Не требуется", isWeekly: true 
+        },
+        rank_5_6: { 
+            name: "Повышение с 5-го на 6-й ранг", 
+            points: 100, meds: 30, time: 30, audits: 1, exam: "«Социофобия»", isWeekly: false 
+        },
+        rank_6_7: { 
+            name: "Повышение с 6-го на 7-й ранг", 
+            points: 350, meds: 40, time: 60, audits: 1, exam: "«Депрессия»", isWeekly: false 
+        },
+        rank_7_8: { 
+            name: "Повышение с 7-го на 8-й ранг", 
+            points: 400, meds: 50, time: 90, audits: 1, exam: "«Биполярное расстройство»", isWeekly: false 
+        },
+        rank_8_9: { 
+            name: "Повышение с 8-го на 9-й ранг", 
+            points: 450, meds: 80, time: 120, audits: 2, exam: "«Шизофрения»", isWeekly: false 
+        }
+    };
+
+    function addDutyField() {
+        const container = document.getElementById('dutyContainer');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'duty-input-wrapper';
+        wrapper.innerHTML = `
+            <input type="number" class="duty-input" value="0" min="0" oninput="calculatePoints()">
+            <button type="button" class="btn-action btn-remove" onclick="removeDutyField(this)">✕</button>
+        `;
+        container.appendChild(wrapper);
+        calculatePoints();
+    }
+
+    function removeDutyField(button) {
+        button.parentElement.remove();
