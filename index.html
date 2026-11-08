@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор ПСЭС | PSES Famq</title>
+    <title>Калькулятор ПСЭС | С любовью от Лобанова ♥</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -37,7 +37,7 @@
             font-weight: 600;
             font-size: 14px;
         }
-        input[type="text"], input[type="number"], select {
+        input[type="text"], input[type="number"], input[type="time"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid #1e1f22;
@@ -58,9 +58,18 @@
             gap: 15px;
         }
         .duty-input-wrapper {
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr auto 1fr auto;
+            align-items: center;
             gap: 8px;
             margin-bottom: 8px;
+            background: #232428;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .duty-text {
+            font-size: 13px;
+            font-weight: bold;
         }
         .btn-action {
             padding: 10px 14px;
@@ -69,10 +78,16 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 16px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .btn-add {
             background-color: #5865f2;
             color: white;
+            width: 100%;
+            margin-top: 5px;
         }
         .btn-add:hover { background-color: #4752c4; }
         .btn-remove {
@@ -138,7 +153,7 @@
 <body>
 
 <div class="container">
-    <h1>📊 Калькулятор баллов ПСЭС (с любовью от Владимира Лобанова ♥ )</h1>
+    <h1>📊 Калькулятор баллов ПСЭС (С Любовью от Лобанова ♥)</h1>
     
     <div class="form-group">
         <label style="color: #5865f2;">Выберите цель отчета / ранг:</label>
@@ -169,13 +184,17 @@
     <hr style="border: 0; border-top: 1px solid #3f4147; margin: 20px 0;">
 
     <div class="form-group">
-        <label>Дежурства (минуты):</label>
+        <label style="color: #fee75c;">Временные промежутки дежурств:</label>
         <div id="dutyContainer">
             <div class="duty-input-wrapper">
-                <input type="number" class="duty-input" value="0" min="0" oninput="calculatePoints()">
-                <button type="button" class="btn-action btn-add" onclick="addDutyField()">+</button>
+                <span class="duty-text">С</span>
+                <input type="time" class="duty-start" onchange="calculatePoints()">
+                <span class="duty-text">До</span>
+                <input type="time" class="duty-end" onchange="calculatePoints()">
+                <button type="button" class="btn-action btn-remove" onclick="removeDutyField(this)">✕</button>
             </div>
         </div>
+        <button type="button" class="btn-action btn-add" onclick="addDutyField()">+ Добавить промежуток времени</button>
     </div>
 
     <div class="grid-2">
@@ -189,7 +208,8 @@
         </div>
     </div>
 
-    <div class="grid-2">
+    <!-- Блок полей для Справок (Переключается динамически) -->
+    <div class="grid-2" id="weeklyMedsBlock">
         <div class="form-group">
             <label>Справки ДЕНЬ (кол-во):</label>
             <input type="number" id="medDay" value="0" min="0" oninput="calculatePoints()">
@@ -198,6 +218,11 @@
             <label>Справки НОЧЬ (кол-во):</label>
             <input type="number" id="medNight" value="0" min="0" oninput="calculatePoints()">
         </div>
+    </div>
+
+    <div class="form-group" id="promotionMedsBlock" style="display: none;">
+        <label style="color: #fee75c;">Медицинские справки (всего):</label>
+        <input type="number" id="medTotalInput" value="0" min="0" oninput="calculatePoints()">
     </div>
 
     <div class="grid-2">
@@ -235,7 +260,8 @@
 <script>
     const POINT_RATES = {
         medDay: 4,       
-        medNight: 6,     
+        medNight: 6,
+        medPromoDefault: 4, // Базовая ставка за справку при повышении      
         vaccine: 3,      
         pmp: 3,          
         pills: 1,        
@@ -251,31 +277,3 @@
             name: "Повышение с 5-го на 6-й ранг", 
             points: 100, meds: 30, time: 30, audits: 1, exam: "«Социофобия»", isWeekly: false 
         },
-        rank_6_7: { 
-            name: "Повышение с 6-го на 7-й ранг", 
-            points: 350, meds: 40, time: 60, audits: 1, exam: "«Депрессия»", isWeekly: false 
-        },
-        rank_7_8: { 
-            name: "Повышение с 7-го на 8-й ранг", 
-            points: 400, meds: 50, time: 90, audits: 1, exam: "«Биполярное расстройство»", isWeekly: false 
-        },
-        rank_8_9: { 
-            name: "Повышение с 8-го на 9-й ранг", 
-            points: 450, meds: 80, time: 120, audits: 2, exam: "«Шизофрения»", isWeekly: false 
-        }
-    };
-
-    function addDutyField() {
-        const container = document.getElementById('dutyContainer');
-        const wrapper = document.createElement('div');
-        wrapper.className = 'duty-input-wrapper';
-        wrapper.innerHTML = `
-            <input type="number" class="duty-input" value="0" min="0" oninput="calculatePoints()">
-            <button type="button" class="btn-action btn-remove" onclick="removeDutyField(this)">✕</button>
-        `;
-        container.appendChild(wrapper);
-        calculatePoints();
-    }
-
-    function removeDutyField(button) {
-        button.parentElement.remove();
