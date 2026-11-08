@@ -7,10 +7,6 @@
   <style>
     * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       min-height: 100vh;
       margin: 0;
@@ -53,8 +49,8 @@
         radial-gradient(ellipse at 85% 15%, rgba(131, 88, 210, .35), transparent 48%),
         linear-gradient(135deg, #333744, #191c25 75%);
       box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
-      text-decoration: none;
       color: inherit;
+      text-decoration: none;
       transition: transform .18s ease, border-color .18s ease;
     }
 
@@ -95,37 +91,6 @@
       font-weight: 700;
     }
 
-    .info-section {
-      margin-top: 36px;
-      padding: 22px;
-      border: 1px solid #353a47;
-      border-radius: 16px;
-      background: #151922;
-      scroll-margin-top: 20px;
-    }
-
-    .info-section h2 {
-      margin: 0 0 12px;
-      font-size: 22px;
-    }
-
-    .info-section p {
-      margin: 0;
-      color: #c1c5cf;
-      line-height: 1.6;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 16px;
-      color: #b5a5ff;
-      text-decoration: none;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
-
     @media (max-width: 500px) {
       body { padding: 20px 14px; }
       .card { min-height: 195px; }
@@ -133,7 +98,7 @@
   </style>
 </head>
 <body>
-  <main id="top">
+  <main>
     <h1>Панель инструментов ПСЭС</h1>
     <p class="subtitle">Выберите нужный раздел</p>
 
@@ -151,31 +116,10 @@
         <span class="icon">◆</span>
         <div>
           <h2>Информация о проверках</h2>
-          <p>Правила и информация о проверках государственных структур</p>
+          <p>Расписание проверок организаций ПСЭС</p>
         </div>
-        <span class="button">Открыть →</span>
+        <span class="button">Перейти →</span>
       </a>
-
-      <a class="card" href="#exams">
-        <span class="icon">▣</span>
-        <div>
-          <h2>Информация по экзаменам</h2>
-          <p>Материалы и требования для сдачи экзаменов</p>
-        </div>
-        <span class="button">Открыть →</span>
-      </a>
-    </section>
-
-    <section class="info-section" id="checks">
-      <h2>Информация о проверках</h2>
-      <p>Добавьте сюда актуальные правила, порядок проведения и требования к проверкам.</p>
-      <a class="back-link" href="#top">↑ Наверх</a>
-    </section>
-
-    <section class="info-section" id="exams">
-      <h2>Информация по экзаменам</h2>
-      <p>Добавьте сюда актуальные темы экзаменов, материалы для подготовки и порядок сдачи.</p>
-      <a class="back-link" href="#top">↑ Наверх</a>
     </section>
   </main>
 </body>
