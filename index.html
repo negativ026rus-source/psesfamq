@@ -233,7 +233,7 @@
         </div>
     </div>
 
-    <!-- Инструкторский блок полей (Показывается только если стоит галочка) -->
+    <!-- Инструкторский блок полей -->
     <div class="grid-2" id="instructorBlock" style="display: none;">
         <div class="form-group">
             <label>Выдача квалиф. терапевта:</label>
@@ -245,7 +245,7 @@
         </div>
     </div>
 
-    <!-- Блок полей для Справок (Переключается динамически) -->
+    <!-- Блок полей для Справок в Еженедельном отчете -->
     <div class="grid-2" id="weeklyMedsBlock">
         <div class="form-group">
             <label>Справки ДЕНЬ (кол-во):</label>
@@ -257,6 +257,7 @@
         </div>
     </div>
 
+    <!-- Поле справок для Повышения -->
     <div class="form-group" id="promotionMedsBlock" style="display: none;">
         <label style="color: #fee75c;">Медицинские справки (всего):</label>
         <input type="number" id="medTotalInput" value="0" min="0" oninput="calculatePoints()">
