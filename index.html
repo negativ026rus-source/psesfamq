@@ -93,8 +93,8 @@
     <input id="name" placeholder="Например: Иван Иванов">
   </label>
 
-  <label>Текущий ранг
-    <input id="rank" placeholder="Например: 5 ранг">
+  <label>Статический ID
+    <input id="staticId" placeholder="Введите статический ID">
   </label>
 
   <label>Что рассчитываем?
@@ -145,11 +145,6 @@
   <div id="rows"></div>
   <p class="note" id="certsNote"></p>
 
-  <label>
-    <input id="submitted" type="checkbox" style="width:auto">
-    Недельный отчёт уже отправлен в Discord
-  </label>
-
   <h2>Результат</h2>
   <div id="result"></div>
   <button id="copy" type="button">Скопировать для Discord</button>
@@ -183,7 +178,7 @@
       "weekly": { title: "Недельный отчёт", points: 600, certs: 0, duty: 0, checks: 3, exam: "" }
     };
 
-    const KEY = "pses-calculator-v9";
+    const KEY = "pses-calculator-v10";
 
     const defaultReqs = () => Object.fromEntries(
       Object.keys(GOALS).map(key => [key, {
@@ -205,10 +200,9 @@
 
     const state = {
       name: "",
-      rank: "",
+      staticId: "",
       goal: "5-6",
       instructor: false,
-      submitted: false,
       counts: Array(SLOTS).fill(""),
       points: defaultPoints(),
       dutyIntervals: [],
@@ -220,10 +214,9 @@
       const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
       if (saved && typeof saved === "object") {
         if (typeof saved.name === "string") state.name = saved.name;
-        if (typeof saved.rank === "string") state.rank = saved.rank;
+        if (typeof saved.staticId === "string") state.staticId = saved.staticId;
         if (GOALS[saved.goal]) state.goal = saved.goal;
         state.instructor = !!saved.instructor;
-        state.submitted = !!saved.submitted;
 
         state.counts = Array.from({ length: SLOTS }, (_, i) => saved.counts?.[i] ?? "");
 
@@ -477,7 +470,7 @@
       );
 
       const name = state.name.trim() || "Не указано";
-      const rank = state.rank.trim() || "Не указано";
+      const staticId = state.staticId.trim() || "Не указано";
 
       const certsLine = isWeekly()
         ? `Справки: день ${format(number(state.counts[1]))} + ночь ${format(number(state.counts[2]))} = ${format(certs)}`
@@ -486,7 +479,7 @@
       const text =
 `**${GOALS[state.goal].title}**
 Сотрудник: ${name}
-Текущий ранг: ${rank}
+Статический ID: ${staticId}
 ${isWeekly() && state.instructor ? "Инструктор: ДА\n" : ""}
 ${lines.length ? lines.join("\n") : "• Действия пока не указаны"}
 
@@ -497,8 +490,7 @@ ${certsLine}
 
 ${detail.join("\n")}
 
-**Результат: ${allOK ? "ВЫПОЛНЕНО ✅" : "НЕ ВЫПОЛНЕНО ❌"}**
-Статус недельного отчёта: ${state.submitted ? "СДАН" : "НЕ СДАН"}`;
+**Результат: ${allOK ? "ВЫПОЛНЕНО ✅" : "НЕ ВЫПОЛНЕНО ❌"}**`;
 
       document.getElementById("result").textContent = text;
     }
@@ -539,14 +531,8 @@ ${detail.join("\n")}
       update();
     });
 
-    document.getElementById("rank").addEventListener("input", event => {
-      state.rank = event.target.value;
-      save();
-      update();
-    });
-
-    document.getElementById("submitted").addEventListener("change", event => {
-      state.submitted = event.target.checked;
+    document.getElementById("staticId").addEventListener("input", event => {
+      state.staticId = event.target.value;
       save();
       update();
     });
@@ -574,8 +560,6 @@ ${detail.join("\n")}
       state.counts = Array(SLOTS).fill("");
       state.points = defaultPoints();
       state.dutyIntervals = [{ start: "", end: "" }];
-      state.submitted = false;
-      document.getElementById("submitted").checked = false;
       save();
       buildDutyRows();
       buildRows();
@@ -585,10 +569,9 @@ ${detail.join("\n")}
     /* ---------- запуск ---------- */
 
     document.getElementById("name").value = state.name;
-    document.getElementById("rank").value = state.rank;
+    document.getElementById("staticId").value = state.staticId;
     document.getElementById("goal").value = state.goal;
     document.getElementById("instructor").checked = !!state.instructor;
-    document.getElementById("submitted").checked = !!state.submitted;
 
     buildDutyRows();
     loadGoal();
