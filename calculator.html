@@ -31,34 +31,43 @@
     .app {
       max-width: 780px;
       margin: 0 auto;
-      padding: 26px 26px 30px;
+      padding: 26px;
       border-radius: 16px;
       background: var(--card);
       box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
     }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover { text-decoration: underline; }
 
     h1 {
       margin: 0 0 24px;
       font-size: 22px;
       line-height: 1.3;
       text-align: center;
-      font-weight: 700;
     }
 
     .accent-label {
       display: block;
       margin-bottom: 8px;
+      color: var(--accent);
       font-size: 14px;
       font-weight: 700;
-      color: var(--accent);
     }
 
     .field-label {
       display: block;
       margin-bottom: 6px;
+      color: var(--muted);
       font-size: 13px;
       font-weight: 700;
-      color: var(--muted);
     }
 
     input, select {
@@ -95,17 +104,17 @@
 
     details {
       margin-top: 10px;
+      padding: 10px 14px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 10px 14px;
       background: #2a2a30;
     }
 
     summary {
+      color: var(--muted);
       cursor: pointer;
       font-size: 13px;
       font-weight: 700;
-      color: var(--muted);
     }
 
     .two {
@@ -132,8 +141,8 @@
     }
 
     .duty-word {
-      font-size: 14px;
       color: var(--muted);
+      font-size: 14px;
       font-weight: 700;
     }
 
@@ -144,9 +153,9 @@
       border-radius: 9px;
       background: var(--danger);
       color: #fff;
+      cursor: pointer;
       font-size: 16px;
       font-weight: 700;
-      cursor: pointer;
     }
 
     .btn-block {
@@ -157,9 +166,9 @@
       border-radius: 9px;
       background: var(--accent-strong);
       color: #fff;
+      cursor: pointer;
       font: inherit;
       font-weight: 700;
-      cursor: pointer;
     }
 
     .btn-block:hover { background: #4b3cd0; }
@@ -171,8 +180,8 @@
       border-radius: 9px;
       background: transparent;
       color: var(--muted);
-      font: inherit;
       cursor: pointer;
+      font: inherit;
     }
 
     .check-row {
@@ -180,8 +189,8 @@
       align-items: center;
       gap: 9px;
       margin-top: 14px;
-      font-size: 14px;
       color: #c9c9d4;
+      font-size: 14px;
     }
 
     .result {
@@ -204,11 +213,11 @@
 
     #report {
       margin: 14px 0 0;
+      color: #d6d6e0;
       text-align: left;
       white-space: pre-wrap;
       word-break: break-word;
       font: 13px/1.6 Consolas, "Courier New", monospace;
-      color: #d6d6e0;
     }
 
     @media (max-width: 560px) {
@@ -220,9 +229,11 @@
 </head>
 <body>
   <div class="app">
+    <a class="back" href="index.html">← На главную</a>
+
     <h1>🏥 Калькулятор баллов ПСЭС (С любовью от Лобанова ♥)</h1>
 
-    <label class="accent-label" for="goal">Выберите цель отчета / ранг:</label>
+    <label class="accent-label" for="goal">Выберите цель отчёта / ранг:</label>
     <select id="goal"></select>
     <div class="req-box" id="reqBox"></div>
 
@@ -273,7 +284,7 @@
 
     <label class="check-row" style="margin-top:0">
       <input id="instructor" type="checkbox">
-      Сотрудник является инструктором (доп. поля только в недельном отчёте)
+      Сотрудник является инструктором (дополнительные поля только в недельном отчёте)
     </label>
 
     <div class="two row-gap" id="fields"></div>
@@ -284,7 +295,7 @@
     </details>
 
     <div class="result">
-      <div class="status bad" id="status">❌ Отчет не сдан</div>
+      <div class="status bad" id="status">❌ Отчёт не сдан</div>
       <pre id="report"></pre>
     </div>
 
@@ -293,9 +304,10 @@
   </div>
 
   <script>
-    /* mode: "all" — поле видно во всех режимах, "weekly" — только в недельном отчёте
-       instructor: true — только в недельном отчёте и при включённой галочке «инструктор»
-       direct: true — вводится готовая сумма баллов */
+    /* mode: "all" — поле доступно во всех режимах,
+       mode: "weekly" — только в недельном отчёте,
+       instructor: true — только инструктору в недельном отчёте,
+       direct: true — вводится готовая сумма баллов. */
     const ROWS = [
       {
         id: 3,
@@ -344,8 +356,8 @@
       {
         id: 7,
         mode: "all",
-        label: "Доп. Баллы (поощрения)",
-        field: "Доп. Баллы (поощрения):",
+        label: "Доп. баллы (поощрения)",
+        field: "Доп. баллы (поощрения):",
         direct: true
       },
       {
@@ -492,7 +504,8 @@
       }
     } catch {}
 
-    /* Обновляем старые сохранённые значения ставок инструктора и баллов цели. */
+    /* Обновляем старые значения инструкторских баллов и требование 5→6,
+       только если в сохранениях остались прежние значения по умолчанию. */
     if (state.points[8] === "15") state.points[8] = "20";
     if (state.points[9] === "20") state.points[9] = "30";
 
@@ -526,8 +539,6 @@
     function fieldFor(row) {
       return isWeekly() ? (row.weeklyField || row.field) : row.field;
     }
-
-    /* ---------- поля количества ---------- */
 
     function buildFields() {
       const box = document.getElementById("fields");
@@ -564,8 +575,6 @@
       });
     }
 
-    /* ---------- баллы за действие ---------- */
-
     function buildPointsGrid() {
       const box = document.getElementById("pointsGrid");
       box.innerHTML = "";
@@ -594,8 +603,6 @@
         box.appendChild(wrap);
       });
     }
-
-    /* ---------- дежурства ---------- */
 
     function buildDutyRows() {
       const box = document.getElementById("dutyRows");
@@ -647,11 +654,7 @@
           update();
         });
 
-        row.appendChild(from);
-        row.appendChild(start);
-        row.appendChild(to);
-        row.appendChild(end);
-        row.appendChild(remove);
+        row.append(from, start, to, end, remove);
         box.appendChild(row);
       });
     }
@@ -663,11 +666,11 @@
       state.dutyIntervals.forEach(interval => {
         if (!interval.start || !interval.end) return;
 
-        const [sh, sm] = interval.start.split(":").map(Number);
-        const [eh, em] = interval.end.split(":").map(Number);
+        const [startHour, startMinute] = interval.start.split(":").map(Number);
+        const [endHour, endMinute] = interval.end.split(":").map(Number);
 
-        const start = sh * 60 + sm;
-        let end = eh * 60 + em;
+        const start = startHour * 60 + startMinute;
+        let end = endHour * 60 + endMinute;
 
         if (end < start) end += 24 * 60;
 
@@ -684,8 +687,6 @@
 
       return { totalMinutes, entries };
     }
-
-    /* ---------- требования цели ---------- */
 
     function updateReqBox() {
       const req = state.reqs[state.goal];
@@ -729,8 +730,6 @@
       update();
     }
 
-    /* ---------- расчёт ---------- */
-
     function update() {
       let totalPoints = 0;
       const lines = [];
@@ -746,9 +745,9 @@
           `• Дежурства: ${format(duty)} мин × ${DUTY_POINTS} балл. за ${DUTY_MINUTES} мин = ${format(dutyPoints)} балл.`
         );
 
-        dutySummary.entries.forEach((entry, i) => {
+        dutySummary.entries.forEach((entry, index) => {
           lines.push(
-            `   ${i + 1}) ${entry.start}–${entry.end} = ${format(entry.minutes)} мин`
+            `   ${index + 1}) ${entry.start}–${entry.end} = ${format(entry.minutes)} мин`
           );
         });
       }
@@ -791,14 +790,12 @@
       };
 
       const exam = GOALS[state.goal].exam;
-      const items = [];
-
-      items.push({
+      const items = [{
         ok: totalPoints >= need.points,
         text: "Баллы",
         have: totalPoints,
         need: need.points
-      });
+      }];
 
       if (need.certs > 0) {
         items.push({
@@ -849,35 +846,21 @@
 
       const head = [`**${GOALS[state.goal].title}**`];
 
-      if (state.name.trim()) {
-        head.push(`Сотрудник: ${state.name.trim()}`);
-      }
-      if (state.staticId.trim()) {
-        head.push(`Статический ID: ${state.staticId.trim()}`);
-      }
-      if (isWeekly() && state.instructor) {
-        head.push("Инструктор: ДА");
-      }
+      if (state.name.trim()) head.push(`Сотрудник: ${state.name.trim()}`);
+      if (state.staticId.trim()) head.push(`Статический ID: ${state.staticId.trim()}`);
+      if (isWeekly() && state.instructor) head.push("Инструктор: ДА");
 
       const summary = [`**Всего баллов: ${format(totalPoints)}**`];
 
       if (isWeekly()) {
-        if (certsDay > 0) {
-          summary.push(`Справки (день): ${format(certsDay)}`);
-        }
-        if (certsNight > 0) {
-          summary.push(`Справки (ночь): ${format(certsNight)}`);
-        }
+        if (certsDay > 0) summary.push(`Справки (день): ${format(certsDay)}`);
+        if (certsNight > 0) summary.push(`Справки (ночь): ${format(certsNight)}`);
       } else if (certs > 0) {
         summary.push(`Справки: ${format(certs)}`);
       }
 
-      if (duty > 0) {
-        summary.push(`Время на посту: ${format(duty)} мин`);
-      }
-      if (checks > 0) {
-        summary.push(`Гос. проверок: ${format(checks)}`);
-      }
+      if (duty > 0) summary.push(`Время на посту: ${format(duty)} мин`);
+      if (checks > 0) summary.push(`Гос. проверок: ${format(checks)}`);
 
       const text = [
         head.join("\n"),
@@ -892,11 +875,8 @@
       const status = document.getElementById("status");
       status.textContent = verdict;
       status.className = "status " + (allOK ? "ok" : "bad");
-
       document.getElementById("report").textContent = text;
     }
-
-    /* ---------- обработчики ---------- */
 
     const goalSelect = document.getElementById("goal");
 
@@ -962,7 +942,6 @@
 
       try {
         await navigator.clipboard.writeText(text);
-
         const button = document.getElementById("copy");
         button.textContent = "Скопировано!";
 
@@ -985,8 +964,6 @@
       buildPointsGrid();
       update();
     });
-
-    /* ---------- запуск ---------- */
 
     document.getElementById("name").value = state.name;
     document.getElementById("staticId").value = state.staticId;
