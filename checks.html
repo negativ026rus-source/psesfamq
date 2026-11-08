@@ -143,8 +143,8 @@
     }
 
     .copy-button:hover {
-      background: #6341d0;
       transform: translateY(-1px);
+      background: #6341d0;
     }
 
     .copy-button.secondary {
@@ -202,25 +202,70 @@
 
     <header>
       <h1>Информация о проверках</h1>
-      <p>Расписание проверок организаций ПСЭС. У каждой организации свои кнопки копирования.</p>
+      <p>Расписание проверок организаций ПСЭС. Используйте кнопки рядом с нужной организацией.</p>
     </header>
 
     <section class="schedule" id="schedule" aria-label="Расписание проверок"></section>
 
     <div class="note">
-      Время указано по расписанию на предоставленном изображении.
+      Время указано по расписанию проверок.
     </div>
   </main>
 
   <script>
+    const hospitalDiscordText = `<@&1538939093151653944> <@&1544008424373751818>
+
+## Дорогие Пэпсики!
+** Уведомляю Вас о сборе на проверку, на наличие действующих мед.карт , у сотрудников "Больница". **
+*Сбор состоится в 20:10, на задней парковке.*
+*Проверка организации "Больница" состоится в 20:30*
+**Присутствие в голосовом канале нашего отдела ОБЯЗАТЕЛЬНО! **
+*Ждём тут https://discord.com/channels/1538939092929216603/1538939110469931134 *`;
+
     const schedule = [
-      { short: "ПН", day: "Понедельник", organization: "Больница", time: "20:30" },
-      { short: "ВТ", day: "Вторник", organization: "Армия", time: "20:30" },
-      { short: "СР", day: "Среда", organization: "Вести Москвы", time: "19:00" },
-      { short: "ЧТ", day: "Четверг", organization: "ФСБ", time: "19:00" },
-      { short: "ПТ", day: "Пятница", organization: "МВД", time: "19:00" },
-      { short: "СБ", day: "Суббота", organization: "Правительство", time: "17:00" },
-      { short: "СБ", day: "Суббота", organization: "ГИБДД", time: "19:00" }
+      {
+        short: "ПН",
+        day: "Понедельник",
+        organization: "Больница",
+        time: "20:30",
+        discordText: hospitalDiscordText
+      },
+      {
+        short: "ВТ",
+        day: "Вторник",
+        organization: "Армия",
+        time: "20:30"
+      },
+      {
+        short: "СР",
+        day: "Среда",
+        organization: "Вести Москвы",
+        time: "19:00"
+      },
+      {
+        short: "ЧТ",
+        day: "Четверг",
+        organization: "ФСБ",
+        time: "19:00"
+      },
+      {
+        short: "ПТ",
+        day: "Пятница",
+        organization: "МВД",
+        time: "19:00"
+      },
+      {
+        short: "СБ",
+        day: "Суббота",
+        organization: "Правительство",
+        time: "17:00"
+      },
+      {
+        short: "СБ",
+        day: "Суббота",
+        organization: "ГИБДД",
+        time: "19:00"
+      }
     ];
 
     async function copyText(text, button, originalLabel) {
@@ -230,24 +275,30 @@
         await navigator.clipboard.writeText(text);
         copied = true;
       } catch {
-        const area = document.createElement("textarea");
-        area.value = text;
-        area.style.position = "fixed";
-        area.style.opacity = "0";
-        document.body.appendChild(area);
-        area.select();
-        copied = document.execCommand("copy");
-        area.remove();
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          copied = document.execCommand("copy");
+        } catch {
+          copied = false;
+        }
+
+        textarea.remove();
       }
 
       button.textContent = copied ? "✅ Скопировано" : "❌ Ошибка";
 
       setTimeout(() => {
         button.textContent = originalLabel;
-      }, 1600);
+      }, 1800);
 
       if (!copied) {
-        alert("Не удалось скопировать. Скопируйте текст вручную:\n\n" + text);
+        alert("Не удалось скопировать. Попробуйте скопировать текст вручную.");
       }
     }
 
@@ -262,34 +313,43 @@
       day.textContent = item.short;
 
       const info = document.createElement("div");
-      info.innerHTML = `
-        <div class="label">Организация</div>
-        <div class="org">${item.organization}</div>
-        <div class="time">${item.time}</div>
-      `;
+
+      const label = document.createElement("div");
+      label.className = "label";
+      label.textContent = "Организация";
+
+      const organization = document.createElement("div");
+      organization.className = "org";
+      organization.textContent = item.organization;
+
+      const time = document.createElement("div");
+      time.className = "time";
+      time.textContent = item.time;
+
+      info.append(label, organization, time);
 
       const actions = document.createElement("div");
       actions.className = "card-actions";
 
-      const discordLabel = "📋 Discord: " + item.organization;
-      const radioLabel = "📻 /dep " + item.organization;
-
       const discordButton = document.createElement("button");
       discordButton.type = "button";
       discordButton.className = "copy-button";
-      discordButton.textContent = discordLabel;
+      discordButton.textContent = `📋 Discord: ${item.organization}`;
       discordButton.addEventListener("click", () => {
-        const text = `${item.day} — ${item.organization} — ${item.time}`;
-        copyText(text, discordButton, discordLabel);
+        const text = item.discordText ||
+          `${item.day} — ${item.organization} — ${item.time}`;
+
+        copyText(text, discordButton, `📋 Discord: ${item.organization}`);
       });
 
       const radioButton = document.createElement("button");
       radioButton.type = "button";
       radioButton.className = "copy-button secondary";
-      radioButton.textContent = radioLabel;
+      radioButton.textContent = `📻 /dep ${item.organization}`;
       radioButton.addEventListener("click", () => {
         const text = `/dep ${item.organization} — ${item.time}`;
-        copyText(text, radioButton, radioLabel);
+
+        copyText(text, radioButton, `📻 /dep ${item.organization}`);
       });
 
       actions.append(discordButton, radioButton);
