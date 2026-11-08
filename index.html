@@ -6,7 +6,7 @@
   <title>Калькулятор баллов ПСЭС</title>
   <style>
     body {
-      max-width: 760px;
+      max-width: 820px;
       margin: 30px auto;
       padding: 0 16px;
       font: 16px Arial, sans-serif;
@@ -14,174 +14,562 @@
       background: #171923;
     }
     h1 { color: #9cc2ff; }
-    label { display: block; margin: 14px 0; }
-    input {
+    h2 { margin-top: 28px; color: #c9d4ee; }
+    label { display: block; margin: 12px 0; }
+    input, select {
       box-sizing: border-box;
       width: 100%;
       margin-top: 5px;
-      padding: 10px;
+      padding: 9px;
       border: 1px solid #44495d;
       border-radius: 7px;
       color: #fff;
       background: #222638;
     }
-    .activity {
+    .row {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 2.2fr 1fr 1fr;
       gap: 10px;
       align-items: end;
-      margin: 10px 0;
+      padding: 8px 0;
+      border-bottom: 1px solid #2b3044;
     }
-    button {
-      margin: 14px 8px 14px 0;
-      padding: 10px 16px;
-      border: 0;
-      border-radius: 7px;
-      cursor: pointer;
+    .row .title { padding-bottom: 9px; }
+    .row.direct { grid-template-columns: 2.2fr 1fr; }
+    .duty-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 8px 0;
+      border-bottom: 1px solid #2b3044;
     }
-    #copy { color: white; background: #426fe0; }
-    #result {
-      white-space: pre-wrap;
+    .duty-row button {
+      margin: 0 0 12px;
+      background: #743d4b;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .panel, #result {
+      margin-top: 16px;
       padding: 16px;
       border-radius: 8px;
       background: #222638;
     }
+    button {
+      margin: 16px 8px 16px 0;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+      color: #fff;
+      background: #3a4058;
+    }
+    #copy { background: #426fe0; }
+    #result { white-space: pre-wrap; }
     .hint { color: #b4b8c8; font-size: 14px; }
-    @media (max-width: 520px) {
-      .activity { grid-template-columns: 1fr 1fr; }
-      .activity label:first-child { grid-column: 1 / -1; }
+    .note {
+      margin: 8px 0 0;
+      padding: 8px 10px;
+      border-left: 3px solid #426fe0;
+      border-radius: 4px;
+      background: #1c2030;
+      color: #b4b8c8;
+      font-size: 14px;
+    }
+    @media (max-width: 560px) {
+      .row, .row.direct, .duty-row { grid-template-columns: 1fr 1fr; }
+      .row .title { grid-column: 1 / -1; padding-bottom: 0; }
     }
   </style>
 </head>
 <body>
   <h1>Калькулятор баллов ПСЭС</h1>
-  <p class="hint">Укажите количество выполненных действий и баллы за одно действие.</p>
 
-  <label>
-    Имя и фамилия
+  <label>Имя и фамилия
     <input id="name" placeholder="Например: Иван Иванов">
   </label>
 
-  <label>
-    Ранг / должность
-    <input id="rank" placeholder="Например: Сотрудник">
+  <label>Текущий ранг
+    <input id="rank" placeholder="Например: 5 ранг">
   </label>
 
-  <h2>Выполненные действия</h2>
-  <div id="activities"></div>
-
-  <button type="button" onclick="addActivity()">＋ Добавить действие</button>
-
-  <label>
-    Минимум баллов для недельного отчёта
-    <input id="weeklyMin" type="number" min="0" value="10">
+  <label>Что рассчитываем?
+    <select id="goal">
+      <option value="5-6">Повышение с 5 на 6 ранг</option>
+      <option value="6-7">Повышение с 6 на 7 ранг</option>
+      <option value="7-8">Повышение с 7 на 8 ранг</option>
+      <option value="8-9">Повышение с 8 на 9 ранг</option>
+      <option value="weekly">Недельный отчёт</option>
+    </select>
   </label>
 
-  <label>
-    Баллов нужно для повышения
-    <input id="promotionMin" type="number" min="0" value="30">
-  </label>
+  <h2>Требования выбранной цели</h2>
+  <div class="panel">
+    <p class="hint">Подставляются по правилам отдела. Можно изменить — значение сохранится для этой цели.</p>
+    <div class="grid">
+      <label>Баллы
+        <input id="reqPoints" type="number" min="0" step="1">
+      </label>
+      <label>Справки
+        <input id="reqCerts" type="number" min="0" step="1">
+      </label>
+      <label>Время на посту, мин
+        <input id="reqDuty" type="number" min="0" step="1">
+      </label>
+      <label>Гос. проверки
+        <input id="reqChecks" type="number" min="0" step="1">
+      </label>
+    </div>
+    <label id="examWrap">
+      <input id="examDone" type="checkbox" style="width:auto">
+      Экзамен сдан: <span id="examTopic"></span>
+    </label>
+  </div>
+
+  <h2>Дежурства</h2>
+  <div id="dutyRows"></div>
+  <button id="addDuty" type="button">＋ Добавить дежурство</button>
+  <p class="note">Укажите время начала и окончания каждого дежурства. Время через полночь учитывается автоматически. Начисление: 20 баллов за каждые 30 минут.</p>
+
+  <h2>Выполнено за неделю</h2>
+  <div id="rows"></div>
+  <p class="note" id="certsNote"></p>
 
   <label>
     <input id="submitted" type="checkbox" style="width:auto">
-    Отчёт уже отправлен в Discord
+    Недельный отчёт уже отправлен в Discord
   </label>
 
   <h2>Результат</h2>
   <div id="result"></div>
   <button id="copy" type="button">Скопировать для Discord</button>
+  <button id="reset" type="button">Сбросить количества</button>
 
   <script>
-    const activities = document.getElementById("activities");
+    /* direct: true — строка, где вписывается готовая сумма баллов */
+    const ROWS = [
+      { id: 1, mode: "all",    label: "Выданные справки",
+        weeklyLabel: "Выданные справки (день)", points: 4 },
+      { id: 2, mode: "weekly", label: "Выданные справки (ночь)", points: 6 },
+      { id: 3, mode: "all",    label: "Вакцинации", points: 3 },
+      { id: 4, mode: "all",    label: "ПМП", points: 3 },
+      { id: 5, mode: "all",    label: "Выданные таблетки", points: 1 },
+      { id: 6, mode: "all",    label: "Проверка государственных структур", points: 50 },
+      { id: 7, mode: "all",    label: "Доп. Баллы (поощрения)", direct: true }
+    ];
+    const SLOTS = 8;
 
-    function addActivity(title = "", count = 0, points = 1) {
-      const row = document.createElement("div");
-      row.className = "activity";
-      row.innerHTML = `
-        <label>Действие
-          <input class="title" placeholder="Например: Проведён инструктаж"
-                 value="${title}">
-        </label>
-        <label>Количество
-          <input class="count" type="number" min="0" value="${count}">
-        </label>
-        <label>Баллов за одно
-          <input class="points" type="number" min="0" value="${points}">
-        </label>`;
-      activities.appendChild(row);
-      row.querySelectorAll("input").forEach(input =>
-        input.addEventListener("input", update)
+    const DUTY_MINUTES = 30;   // за этот интервал начисляется...
+    const DUTY_POINTS = 20;    // ...столько баллов
+
+    const GOALS = {
+      "5-6": { title: "Повышение с 5 на 6 ранг", points: 100, certs: 30, duty: 30, checks: 1, exam: "Социофобия" },
+      "6-7": { title: "Повышение с 6 на 7 ранг", points: 350, certs: 40, duty: 60, checks: 1, exam: "Депрессия" },
+      "7-8": { title: "Повышение с 7 на 8 ранг", points: 400, certs: 50, duty: 90, checks: 1, exam: "Биполярное расстройство" },
+      "8-9": { title: "Повышение с 8 на 9 ранг", points: 450, certs: 80, duty: 120, checks: 2, exam: "Шизофрения" },
+      "weekly": { title: "Недельный отчёт", points: 600, certs: 0, duty: 0, checks: 3, exam: "" }
+    };
+
+    const KEY = "pses-calculator-v7";
+
+    const defaultReqs = () => Object.fromEntries(
+      Object.keys(GOALS).map(key => [key, {
+        points: String(GOALS[key].points),
+        certs: String(GOALS[key].certs),
+        duty: String(GOALS[key].duty),
+        checks: String(GOALS[key].checks)
+      }])
+    );
+
+    const defaultExams = () => Object.fromEntries(
+      Object.keys(GOALS).map(key => [key, false])
+    );
+
+    const defaultPoints = () => Array.from({ length: SLOTS }, (_, i) => {
+      const row = ROWS.find(row => row.id === i);
+      return row && row.points !== undefined ? String(row.points) : "";
+    });
+
+    const state = {
+      name: "",
+      rank: "",
+      goal: "5-6",
+      submitted: false,
+      counts: Array(SLOTS).fill(""),
+      points: defaultPoints(),
+      dutyIntervals: [],
+      reqs: defaultReqs(),
+      exams: defaultExams()
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+      if (saved && typeof saved === "object") {
+        if (typeof saved.name === "string") state.name = saved.name;
+        if (typeof saved.rank === "string") state.rank = saved.rank;
+        if (GOALS[saved.goal]) state.goal = saved.goal;
+        state.submitted = !!saved.submitted;
+
+        state.counts = Array.from({ length: SLOTS }, (_, i) => saved.counts?.[i] ?? "");
+
+        state.points = Array.from({ length: SLOTS }, (_, i) => {
+          const stored = saved.points?.[i];
+          if (stored !== undefined && stored !== null && stored !== "") {
+            return String(stored);
+          }
+          const row = ROWS.find(row => row.id === i);
+          return row && row.points !== undefined ? String(row.points) : "";
+        });
+
+        state.dutyIntervals = Array.isArray(saved.dutyIntervals)
+          ? saved.dutyIntervals.map(item => ({
+              start: (item && item.start) || "",
+              end: (item && item.end) || ""
+            }))
+          : [];
+
+        state.reqs = { ...defaultReqs(), ...(saved.reqs || {}) };
+        state.exams = { ...defaultExams(), ...(saved.exams || {}) };
+      }
+    } catch {}
+
+    const number = value => {
+      const n = Number(value);
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    };
+    const format = n => String(Math.round(n * 100) / 100);
+    const isWeekly = () => state.goal === "weekly";
+
+    function save() {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    }
+
+    function visibleRows() {
+      return ROWS.filter(row => row.mode === "all" || isWeekly());
+    }
+
+    function labelFor(row) {
+      return isWeekly() ? (row.weeklyLabel || row.label) : row.label;
+    }
+
+    /* ---------- строки действий ---------- */
+
+    function buildRows() {
+      const box = document.getElementById("rows");
+      box.innerHTML = "";
+
+      visibleRows().forEach(row => {
+        const wrap = document.createElement("div");
+        wrap.className = row.direct ? "row direct" : "row";
+
+        if (row.direct) {
+          wrap.innerHTML = `
+            <div class="title">${row.label}</div>
+            <label>Доп. баллы
+              <input class="directPoints" type="number" min="0" step="0.1"
+                     data-index="${row.id}" value="${state.points[row.id]}">
+            </label>`;
+        } else {
+          wrap.innerHTML = `
+            <div class="title">${labelFor(row)}</div>
+            <label>Количество
+              <input class="count" type="number" min="0" step="1"
+                     data-index="${row.id}" value="${state.counts[row.id]}">
+            </label>
+            <label>Баллов за единицу
+              <input class="points" type="number" min="0" step="0.1"
+                     data-index="${row.id}" value="${state.points[row.id]}">
+            </label>`;
+        }
+
+        box.appendChild(wrap);
+      });
+
+      box.querySelectorAll(".count").forEach(input =>
+        input.addEventListener("input", event => {
+          state.counts[Number(event.target.dataset.index)] = event.target.value;
+          save();
+          update();
+        })
       );
+
+      box.querySelectorAll(".points, .directPoints").forEach(input =>
+        input.addEventListener("input", event => {
+          state.points[Number(event.target.dataset.index)] = event.target.value;
+          save();
+          update();
+        })
+      );
+
+      document.getElementById("certsNote").textContent = isWeekly()
+        ? "Справки учитываются отдельно: день — 4 балла, ночь — 6 баллов за единицу."
+        : "Справки вводятся одной строкой — общее количество за день и ночь, 4 балла за единицу. Раздельный ввод только в недельном отчёте.";
+    }
+
+    /* ---------- дежурства ---------- */
+
+    function buildDutyRows() {
+      const box = document.getElementById("dutyRows");
+      box.innerHTML = "";
+
+      if (state.dutyIntervals.length === 0) {
+        state.dutyIntervals.push({ start: "", end: "" });
+      }
+
+      state.dutyIntervals.forEach((interval, index) => {
+        const row = document.createElement("div");
+        row.className = "duty-row";
+        row.innerHTML = `
+          <label>Начало
+            <input type="time" class="duty-start" value="${interval.start}">
+          </label>
+          <label>Окончание
+            <input type="time" class="duty-end" value="${interval.end}">
+          </label>
+          <button type="button" class="remove-duty">Удалить</button>`;
+
+        row.querySelector(".duty-start").addEventListener("input", event => {
+          state.dutyIntervals[index].start = event.target.value;
+          save();
+          update();
+        });
+
+        row.querySelector(".duty-end").addEventListener("input", event => {
+          state.dutyIntervals[index].end = event.target.value;
+          save();
+          update();
+        });
+
+        row.querySelector(".remove-duty").addEventListener("click", () => {
+          state.dutyIntervals.splice(index, 1);
+          save();
+          buildDutyRows();
+          update();
+        });
+
+        box.appendChild(row);
+      });
+    }
+
+    function getDutySummary() {
+      let totalMinutes = 0;
+      const entries = [];
+
+      state.dutyIntervals.forEach(interval => {
+        if (!interval.start || !interval.end) return;
+
+        const [startHour, startMinute] = interval.start.split(":").map(Number);
+        const [endHour, endMinute] = interval.end.split(":").map(Number);
+
+        const start = startHour * 60 + startMinute;
+        let end = endHour * 60 + endMinute;
+
+        if (end < start) end += 24 * 60;   // дежурство через полночь
+
+        const minutes = end - start;
+        if (minutes <= 0) return;
+
+        totalMinutes += minutes;
+        entries.push({ start: interval.start, end: interval.end, minutes });
+      });
+
+      return { totalMinutes, entries };
+    }
+
+    /* ---------- требования выбранной цели ---------- */
+
+    function loadGoal() {
+      const req = state.reqs[state.goal];
+      document.getElementById("reqPoints").value = req.points;
+      document.getElementById("reqCerts").value = req.certs;
+      document.getElementById("reqDuty").value = req.duty;
+      document.getElementById("reqChecks").value = req.checks;
+
+      const exam = GOALS[state.goal].exam;
+      document.getElementById("examWrap").style.display = exam ? "block" : "none";
+      document.getElementById("examTopic").textContent = exam;
+      document.getElementById("examDone").checked = !!state.exams[state.goal];
+
+      buildRows();
       update();
     }
 
+    /* ---------- расчёт ---------- */
+
     function update() {
-      let total = 0;
+      let totalPoints = 0;
       const lines = [];
 
-      document.querySelectorAll(".activity").forEach(row => {
-        const title = row.querySelector(".title").value.trim();
-        const count = Number(row.querySelector(".count").value) || 0;
-        const points = Number(row.querySelector(".points").value) || 0;
-        const subtotal = count * points;
+      const dutySummary = getDutySummary();
+      const duty = dutySummary.totalMinutes;
+      const dutyPoints = duty / DUTY_MINUTES * DUTY_POINTS;
 
-        total += subtotal;
-        if (title && count > 0) {
-          lines.push(`• ${title}: ${count} × ${points} = ${subtotal} балл.`);
+      totalPoints += dutyPoints;
+
+      if (duty > 0) {
+        lines.push(`• Дежурства: ${format(duty)} мин × ${DUTY_POINTS} балл. за ${DUTY_MINUTES} мин = ${format(dutyPoints)} балл.`);
+        dutySummary.entries.forEach((entry, index) => {
+          lines.push(`   ${index + 1}) ${entry.start}–${entry.end} = ${format(entry.minutes)} мин`);
+        });
+      }
+
+      visibleRows().forEach(row => {
+        if (row.direct) {
+          const bonus = number(state.points[row.id]);
+          totalPoints += bonus;
+          if (bonus > 0) lines.push(`• ${row.label}: +${format(bonus)} балл.`);
+          return;
+        }
+
+        const count = number(state.counts[row.id]);
+        const per = number(state.points[row.id]);
+        const subtotal = count * per;
+        totalPoints += subtotal;
+
+        if (count > 0) {
+          lines.push(`• ${labelFor(row)}: ${format(count)} × ${format(per)} = ${format(subtotal)} балл.`);
         }
       });
 
-      const weeklyMin = Number(document.getElementById("weeklyMin").value) || 0;
-      const promotionMin = Number(document.getElementById("promotionMin").value) || 0;
-      const submitted = document.getElementById("submitted").checked;
-      const name = document.getElementById("name").value.trim() || "Не указано";
-      const rank = document.getElementById("rank").value.trim() || "Не указано";
+      const certs = isWeekly()
+        ? number(state.counts[1]) + number(state.counts[2])
+        : number(state.counts[1]);
+      const checks = number(state.counts[6]);
 
-      const reportStatus = total >= weeklyMin
-        ? "Норма баллов выполнена"
-        : `Не хватает ${weeklyMin - total} балл. до недельной нормы`;
+      const req = state.reqs[state.goal];
+      const need = {
+        points: number(req.points),
+        certs: number(req.certs),
+        duty: number(req.duty),
+        checks: number(req.checks)
+      };
+      const exam = GOALS[state.goal].exam;
 
-      const submissionStatus = submitted
-        ? "Отчёт отправлен"
-        : "Отчёт не отправлен";
+      const items = [];
+      items.push({ ok: totalPoints >= need.points, text: "Баллы", have: totalPoints, need: need.points });
+      if (need.certs > 0) items.push({ ok: certs >= need.certs, text: "Справки", have: certs, need: need.certs });
+      if (need.duty > 0) items.push({ ok: duty >= need.duty, text: "Время на посту", have: duty, need: need.duty, unit: " мин" });
+      if (need.checks > 0) items.push({ ok: checks >= need.checks, text: "Гос. проверки", have: checks, need: need.checks });
+      if (exam) items.push({ ok: !!state.exams[state.goal], text: `Экзамен «${exam}»`, plain: true });
 
-      const promotionStatus = total >= promotionMin
-        ? "Баллов для повышения набрано"
-        : `До порога повышения: ${promotionMin - total} балл.`;
+      const allOK = items.every(item => item.ok);
+      const detail = items.map(item => item.plain
+        ? `${item.ok ? "✔" : "✖"} ${item.text}`
+        : `${item.ok ? "✔" : "✖"} ${item.text}: ${format(item.have)}${item.unit || ""} / ${format(item.need)}${item.unit || ""}`
+      );
+
+      const name = state.name.trim() || "Не указано";
+      const rank = state.rank.trim() || "Не указано";
+
+      const certsLine = isWeekly()
+        ? `Справки: день ${format(number(state.counts[1]))} + ночь ${format(number(state.counts[2]))} = ${format(certs)}`
+        : `Справки (день + ночь): ${format(certs)}`;
 
       const text =
-`**Недельный отчёт ПСЭС**
+`**${GOALS[state.goal].title}**
 Сотрудник: ${name}
-Ранг: ${rank}
+Текущий ранг: ${rank}
 
 ${lines.length ? lines.join("\n") : "• Действия пока не указаны"}
 
-**Всего баллов: ${total}**
-Недельная норма: ${reportStatus}
-Статус отчёта: ${submissionStatus}
-Повышение: ${promotionStatus}`;
+**Всего баллов: ${format(totalPoints)}**
+${certsLine}
+Время на посту: ${format(duty)} мин
+Гос. проверок: ${format(checks)}
+
+${detail.join("\n")}
+
+**Результат: ${allOK ? "ВЫПОЛНЕНО ✅" : "НЕ ВЫПОЛНЕНО ❌"}**
+Статус недельного отчёта: ${state.submitted ? "СДАН" : "НЕ СДАН"}`;
 
       document.getElementById("result").textContent = text;
-      document.getElementById("copy").onclick = async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-          document.getElementById("copy").textContent = "Скопировано!";
-          setTimeout(() => {
-            document.getElementById("copy").textContent =
-              "Скопировать для Discord";
-          }, 1500);
-        } catch {
-          alert("Не удалось скопировать. Выделите текст результата и скопируйте вручную.");
-        }
-      };
     }
 
-    document.querySelectorAll("#name, #rank, #weeklyMin, #promotionMin, #submitted")
-      .forEach(input => input.addEventListener("input", update));
-    document.getElementById("submitted").addEventListener("change", update);
+    /* ---------- обработчики ---------- */
 
-    addActivity("Действие 1", 0, 1);
-    addActivity("Действие 2", 0, 1);
+    document.getElementById("goal").addEventListener("change", event => {
+      state.goal = event.target.value;
+      save();
+      loadGoal();
+    });
+
+    ["reqPoints", "reqCerts", "reqDuty", "reqChecks"].forEach(id => {
+      document.getElementById(id).addEventListener("input", event => {
+        const field = id.replace("req", "").toLowerCase();
+        state.reqs[state.goal][field] = event.target.value;
+        save();
+        update();
+      });
+    });
+
+    document.getElementById("examDone").addEventListener("change", event => {
+      state.exams[state.goal] = event.target.checked;
+      save();
+      update();
+    });
+
+    document.getElementById("name").addEventListener("input", event => {
+      state.name = event.target.value;
+      save();
+      update();
+    });
+
+    document.getElementById("rank").addEventListener("input", event => {
+      state.rank = event.target.value;
+      save();
+      update();
+    });
+
+    document.getElementById("submitted").addEventListener("change", event => {
+      state.submitted = event.target.checked;
+      save();
+      update();
+    });
+
+    document.getElementById("addDuty").addEventListener("click", () => {
+      state.dutyIntervals.push({ start: "", end: "" });
+      save();
+      buildDutyRows();
+      update();
+    });
+
+    document.getElementById("copy").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(document.getElementById("result").textContent);
+        document.getElementById("copy").textContent = "Скопировано!";
+        setTimeout(() => {
+          document.getElementById("copy").textContent = "Скопировать для Discord";
+        }, 1500);
+      } catch {
+        alert("Не удалось скопировать. Выделите текст результата и скопируйте вручную.");
+      }
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      state.counts = Array(SLOTS).fill("");
+      state.points = defaultPoints();
+      state.dutyIntervals = [{ start: "", end: "" }];
+      state.submitted = false;
+      document.getElementById("submitted").checked = false;
+      save();
+      buildDutyRows();
+      buildRows();
+      update();
+    });
+
+    /* ---------- запуск ---------- */
+
+    document.getElementById("name").value = state.name;
+    document.getElementById("rank").value = state.rank;
+    document.getElementById("goal").value = state.goal;
+    document.getElementById("submitted").checked = !!state.submitted;
+
+    buildDutyRows();
+    loadGoal();
   </script>
 </body>
 </html>
