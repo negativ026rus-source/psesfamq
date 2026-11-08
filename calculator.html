@@ -504,8 +504,7 @@
       }
     } catch {}
 
-    /* Обновляем старые значения инструкторских баллов и требование 5→6,
-       только если в сохранениях остались прежние значения по умолчанию. */
+    /* Обновляем старые сохранённые значения по умолчанию. */
     if (state.points[8] === "15") state.points[8] = "20";
     if (state.points[9] === "20") state.points[9] = "30";
 
@@ -736,13 +735,15 @@
 
       const dutySummary = getDutySummary();
       const duty = dutySummary.totalMinutes;
-      const dutyPoints = duty / DUTY_MINUTES * DUTY_POINTS;
 
+      /* Начисляем только за полные 30-минутные интервалы. */
+      const fullDutyIntervals = Math.floor(duty / DUTY_MINUTES);
+      const dutyPoints = fullDutyIntervals * DUTY_POINTS;
       totalPoints += dutyPoints;
 
       if (duty > 0) {
         lines.push(
-          `• Дежурства: ${format(duty)} мин × ${DUTY_POINTS} балл. за ${DUTY_MINUTES} мин = ${format(dutyPoints)} балл.`
+          `• Дежурства: ${format(duty)} мин; полных интервалов по ${DUTY_MINUTES} мин — ${fullDutyIntervals} × ${DUTY_POINTS} = ${format(dutyPoints)} балл.`
         );
 
         dutySummary.entries.forEach((entry, index) => {
