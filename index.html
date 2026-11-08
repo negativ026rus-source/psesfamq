@@ -107,6 +107,12 @@
     </select>
   </label>
 
+  <label>
+    <input id="instructor" type="checkbox" style="width:auto">
+    Сотрудник является инструктором
+  </label>
+  <p class="note">Инструкторские строки («Выдача квалификации терапевт» — 15 баллов, «Проверка отчёта на повышение» — 20 баллов) появляются только в недельном отчёте.</p>
+
   <h2>Требования выбранной цели</h2>
   <div class="panel">
     <p class="hint">Подставляются по правилам отдела. Можно изменить — значение сохранится для этой цели.</p>
@@ -150,18 +156,21 @@
   <button id="reset" type="button">Сбросить количества</button>
 
   <script>
-    /* direct: true — строка, где вписывается готовая сумма баллов */
+    /* direct: true     — строка, где вписывается готовая сумма баллов
+       instructor: true — строка видна только в недельном отчёте и при включённой галочке «инструктор» */
     const ROWS = [
-      { id: 1, mode: "all",    label: "Выданные справки",
+      { id: 1, mode: "all", label: "Выданные справки",
         weeklyLabel: "Выданные справки (день)", points: 4 },
       { id: 2, mode: "weekly", label: "Выданные справки (ночь)", points: 6 },
-      { id: 3, mode: "all",    label: "Вакцинации", points: 3 },
-      { id: 4, mode: "all",    label: "ПМП", points: 3 },
-      { id: 5, mode: "all",    label: "Выданные таблетки", points: 1 },
-      { id: 6, mode: "all",    label: "Проверка государственных структур", points: 50 },
-      { id: 7, mode: "all",    label: "Доп. Баллы (поощрения)", direct: true }
+      { id: 3, mode: "all", label: "Вакцинации", points: 3 },
+      { id: 4, mode: "all", label: "ПМП", points: 3 },
+      { id: 5, mode: "all", label: "Выданные таблетки", points: 1 },
+      { id: 6, mode: "all", label: "Проверка государственных структур", points: 50 },
+      { id: 7, mode: "all", label: "Доп. Баллы (поощрения)", direct: true },
+      { id: 8, mode: "weekly", label: "Выдача квалификации терапевт", points: 15, instructor: true },
+      { id: 9, mode: "weekly", label: "Проверка отчёта на повышение", points: 20, instructor: true }
     ];
-    const SLOTS = 8;
+    const SLOTS = 10;
 
     const DUTY_MINUTES = 30;   // за этот интервал начисляется...
     const DUTY_POINTS = 20;    // ...столько баллов
@@ -174,7 +183,7 @@
       "weekly": { title: "Недельный отчёт", points: 600, certs: 0, duty: 0, checks: 3, exam: "" }
     };
 
-    const KEY = "pses-calculator-v7";
+    const KEY = "pses-calculator-v9";
 
     const defaultReqs = () => Object.fromEntries(
       Object.keys(GOALS).map(key => [key, {
@@ -190,7 +199,7 @@
     );
 
     const defaultPoints = () => Array.from({ length: SLOTS }, (_, i) => {
-      const row = ROWS.find(row => row.id === i);
+      const row = ROWS.find(item => item.id === i);
       return row && row.points !== undefined ? String(row.points) : "";
     });
 
@@ -198,6 +207,7 @@
       name: "",
       rank: "",
       goal: "5-6",
+      instructor: false,
       submitted: false,
       counts: Array(SLOTS).fill(""),
       points: defaultPoints(),
@@ -212,6 +222,7 @@
         if (typeof saved.name === "string") state.name = saved.name;
         if (typeof saved.rank === "string") state.rank = saved.rank;
         if (GOALS[saved.goal]) state.goal = saved.goal;
+        state.instructor = !!saved.instructor;
         state.submitted = !!saved.submitted;
 
         state.counts = Array.from({ length: SLOTS }, (_, i) => saved.counts?.[i] ?? "");
@@ -221,7 +232,7 @@
           if (stored !== undefined && stored !== null && stored !== "") {
             return String(stored);
           }
-          const row = ROWS.find(row => row.id === i);
+          const row = ROWS.find(item => item.id === i);
           return row && row.points !== undefined ? String(row.points) : "";
         });
 
@@ -249,7 +260,10 @@
     }
 
     function visibleRows() {
-      return ROWS.filter(row => row.mode === "all" || isWeekly());
+      return ROWS.filter(row => {
+        if (row.instructor && (!state.instructor || !isWeekly())) return false;
+        return row.mode === "all" || isWeekly();
+      });
     }
 
     function labelFor(row) {
@@ -473,7 +487,7 @@
 `**${GOALS[state.goal].title}**
 Сотрудник: ${name}
 Текущий ранг: ${rank}
-
+${isWeekly() && state.instructor ? "Инструктор: ДА\n" : ""}
 ${lines.length ? lines.join("\n") : "• Действия пока не указаны"}
 
 **Всего баллов: ${format(totalPoints)}**
@@ -495,6 +509,13 @@ ${detail.join("\n")}
       state.goal = event.target.value;
       save();
       loadGoal();
+    });
+
+    document.getElementById("instructor").addEventListener("change", event => {
+      state.instructor = event.target.checked;
+      save();
+      buildRows();
+      update();
     });
 
     ["reqPoints", "reqCerts", "reqDuty", "reqChecks"].forEach(id => {
@@ -566,6 +587,7 @@ ${detail.join("\n")}
     document.getElementById("name").value = state.name;
     document.getElementById("rank").value = state.rank;
     document.getElementById("goal").value = state.goal;
+    document.getElementById("instructor").checked = !!state.instructor;
     document.getElementById("submitted").checked = !!state.submitted;
 
     buildDutyRows();
