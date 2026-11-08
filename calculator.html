@@ -45,12 +45,13 @@
       font-weight: 700;
     }
 
-    h2 {
-      margin: 26px 0 12px;
-      font-size: 16px;
+    .accent-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
     }
-
-    .accent { color: var(--accent); }
 
     .field-label {
       display: block;
@@ -58,14 +59,6 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--muted);
-    }
-
-    .accent-label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--accent);
     }
 
     input, select {
@@ -360,7 +353,7 @@
         mode: "weekly",
         label: "Выдача квалификации терапевт",
         field: "Выдача квалификации терапевт (кол-во):",
-        points: 15,
+        points: 20,
         instructor: true
       },
       {
@@ -368,12 +361,20 @@
         mode: "weekly",
         label: "Проверка отчёта на повышение",
         field: "Проверка отчёта на повышение (кол-во):",
-        points: 20,
+        points: 30,
+        instructor: true
+      },
+      {
+        id: 10,
+        mode: "weekly",
+        label: "Выдача выговоров",
+        field: "Выдача выговоров (кол-во):",
+        points: 10,
         instructor: true
       }
     ];
 
-    const SLOTS = 10;
+    const SLOTS = 11;
     const DUTY_MINUTES = 30;
     const DUTY_POINTS = 20;
 
@@ -490,6 +491,10 @@
         state.exams = { ...defaultExams(), ...(saved.exams || {}) };
       }
     } catch {}
+
+    /* обновление старых сохранённых ставок инструктора */
+    if (state.points[8] === "15") state.points[8] = "20";
+    if (state.points[9] === "20") state.points[9] = "30";
 
     const number = value => {
       const n = Number(value);
