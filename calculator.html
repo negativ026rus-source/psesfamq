@@ -381,7 +381,7 @@
     const GOALS = {
       "5-6": {
         title: "Повышение с 5-го на 6-й ранг",
-        points: 100,
+        points: 200,
         certs: 30,
         duty: 30,
         checks: 1,
@@ -492,9 +492,13 @@
       }
     } catch {}
 
-    /* обновление старых сохранённых ставок инструктора */
+    /* Обновляем старые сохранённые значения ставок инструктора и баллов цели. */
     if (state.points[8] === "15") state.points[8] = "20";
     if (state.points[9] === "20") state.points[9] = "30";
+
+    if (String(state.reqs["5-6"].points) === "100") {
+      state.reqs["5-6"].points = "200";
+    }
 
     const number = value => {
       const n = Number(value);
