@@ -30,7 +30,7 @@
     }
 
     main {
-      max-width: 920px;
+      max-width: 980px;
       margin: 0 auto;
     }
 
@@ -66,40 +66,6 @@
       line-height: 1.5;
     }
 
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .copy-button {
-      min-height: 48px;
-      padding: 12px 16px;
-      border: 0;
-      border-radius: 10px;
-      background: var(--purple);
-      color: white;
-      cursor: pointer;
-      font: inherit;
-      font-weight: 700;
-      transition: background .15s ease, transform .15s ease;
-    }
-
-    .copy-button:hover {
-      background: #6341d0;
-      transform: translateY(-1px);
-    }
-
-    .copy-button.secondary {
-      border: 1px solid rgba(49, 215, 255, .45);
-      background: #153347;
-    }
-
-    .copy-button.secondary:hover {
-      background: #1b4b66;
-    }
-
     .schedule {
       display: grid;
       gap: 12px;
@@ -110,7 +76,6 @@
       grid-template-columns: 76px 1fr auto;
       gap: 16px;
       align-items: center;
-      min-height: 92px;
       padding: 16px;
       border: 1px solid var(--border);
       border-radius: 15px;
@@ -145,17 +110,49 @@
     }
 
     .time {
-      min-width: 112px;
-      padding: 10px 14px;
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 14px;
       border: 1px solid rgba(49, 215, 255, .4);
-      border-radius: 24px;
+      border-radius: 20px;
       background: rgba(33, 111, 163, .16);
-      color: #fff;
-      text-align: center;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       white-space: nowrap;
     }
+
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .copy-button {
+      min-width: 168px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--purple);
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .copy-button:hover {
+      background: #6341d0;
+      transform: translateY(-1px);
+    }
+
+    .copy-button.secondary {
+      border: 1px solid rgba(49, 215, 255, .45);
+      background: #153347;
+    }
+
+    .copy-button.secondary:hover { background: #1b4b66; }
 
     .note {
       margin-top: 20px;
@@ -168,32 +165,33 @@
       line-height: 1.5;
     }
 
-    @media (max-width: 560px) {
+    @media (max-width: 640px) {
       body { padding: 18px 12px 36px; }
       header { padding: 20px; }
 
-      .actions { grid-template-columns: 1fr; }
-
       .check-card {
-        grid-template-columns: 58px 1fr;
+        grid-template-columns: 56px 1fr;
         gap: 12px;
         padding: 13px;
       }
 
       .day {
-        width: 54px;
-        height: 52px;
+        width: 52px;
+        height: 50px;
         font-size: 14px;
       }
 
       .org { font-size: 16px; }
 
-      .time {
-        grid-column: 2;
-        justify-self: start;
-        min-width: 100px;
-        padding: 8px 13px;
-        font-size: 16px;
+      .card-actions {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .copy-button {
+        flex: 1 1 140px;
+        min-width: 0;
       }
     }
   </style>
@@ -204,82 +202,10 @@
 
     <header>
       <h1>Информация о проверках</h1>
-      <p>Расписание проверок организаций ПСЭС.</p>
+      <p>Расписание проверок организаций ПСЭС. У каждой организации свои кнопки копирования.</p>
     </header>
 
-    <div class="actions">
-      <button class="copy-button" id="copyDiscord" type="button">
-        Скопировать расписание для Discord
-      </button>
-      <button class="copy-button secondary" id="copyRadio" type="button">
-        Скопировать для рации (/dep)
-      </button>
-    </div>
-
-    <section class="schedule" aria-label="Расписание проверок">
-      <article class="check-card">
-        <div class="day">ПН</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">Больница</div>
-        </div>
-        <div class="time">20:30</div>
-      </article>
-
-      <article class="check-card">
-        <div class="day">ВТ</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">Армия</div>
-        </div>
-        <div class="time">20:30</div>
-      </article>
-
-      <article class="check-card">
-        <div class="day">СР</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">Вести Москвы</div>
-        </div>
-        <div class="time">19:00</div>
-      </article>
-
-      <article class="check-card">
-        <div class="day">ЧТ</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">ФСБ</div>
-        </div>
-        <div class="time">19:00</div>
-      </article>
-
-      <article class="check-card">
-        <div class="day">ПТ</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">МВД</div>
-        </div>
-        <div class="time">19:00</div>
-      </article>
-
-      <article class="check-card">
-        <div class="day">СБ</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">Правительство</div>
-        </div>
-        <div class="time">17:00</div>
-      </article>
-
-      <article class="check-card">
-        <div class="day">СБ</div>
-        <div>
-          <div class="label">Организация</div>
-          <div class="org">ГИБДД</div>
-        </div>
-        <div class="time">19:00</div>
-      </article>
-    </section>
+    <section class="schedule" id="schedule" aria-label="Расписание проверок"></section>
 
     <div class="note">
       Время указано по расписанию на предоставленном изображении.
@@ -288,70 +214,87 @@
 
   <script>
     const schedule = [
-      { day: "Понедельник", organization: "Больница", time: "20:30" },
-      { day: "Вторник", organization: "Армия", time: "20:30" },
-      { day: "Среда", organization: "Вести Москвы", time: "19:00" },
-      { day: "Четверг", organization: "ФСБ", time: "19:00" },
-      { day: "Пятница", organization: "МВД", time: "19:00" },
-      { day: "Суббота", organization: "Правительство", time: "17:00" },
-      { day: "Суббота", organization: "ГИБДД", time: "19:00" }
+      { short: "ПН", day: "Понедельник", organization: "Больница", time: "20:30" },
+      { short: "ВТ", day: "Вторник", organization: "Армия", time: "20:30" },
+      { short: "СР", day: "Среда", organization: "Вести Москвы", time: "19:00" },
+      { short: "ЧТ", day: "Четверг", organization: "ФСБ", time: "19:00" },
+      { short: "ПТ", day: "Пятница", organization: "МВД", time: "19:00" },
+      { short: "СБ", day: "Суббота", organization: "Правительство", time: "17:00" },
+      { short: "СБ", day: "Суббота", organization: "ГИБДД", time: "19:00" }
     ];
 
-    const discordText = [
-      "**Расписание проверок ПСЭС**",
-      "",
-      ...schedule.map(item =>
-        `${item.day} — ${item.organization} — ${item.time}`
-      )
-    ].join("\n");
-
-    const radioText = schedule
-      .map(item => `/dep ${item.organization} — ${item.time}`)
-      .join("\n");
-
     async function copyText(text, button, originalLabel) {
+      let copied = false;
+
       try {
         await navigator.clipboard.writeText(text);
-        button.textContent = "Скопировано!";
+        copied = true;
       } catch {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.select();
-
-        const copied = document.execCommand("copy");
-        textarea.remove();
-
-        button.textContent = copied
-          ? "Скопировано!"
-          : "Не удалось скопировать";
-
-        if (!copied) {
-          alert("Не удалось скопировать текст. Попробуйте вручную.");
-        }
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        copied = document.execCommand("copy");
+        area.remove();
       }
+
+      button.textContent = copied ? "✅ Скопировано" : "❌ Ошибка";
 
       setTimeout(() => {
         button.textContent = originalLabel;
-      }, 1800);
+      }, 1600);
+
+      if (!copied) {
+        alert("Не удалось скопировать. Скопируйте текст вручную:\n\n" + text);
+      }
     }
 
-    document.getElementById("copyDiscord").addEventListener("click", event => {
-      copyText(
-        discordText,
-        event.currentTarget,
-        "Скопировать расписание для Discord"
-      );
-    });
+    const container = document.getElementById("schedule");
 
-    document.getElementById("copyRadio").addEventListener("click", event => {
-      copyText(
-        radioText,
-        event.currentTarget,
-        "Скопировать для рации (/dep)"
-      );
+    schedule.forEach(item => {
+      const card = document.createElement("article");
+      card.className = "check-card";
+
+      const day = document.createElement("div");
+      day.className = "day";
+      day.textContent = item.short;
+
+      const info = document.createElement("div");
+      info.innerHTML = `
+        <div class="label">Организация</div>
+        <div class="org">${item.organization}</div>
+        <div class="time">${item.time}</div>
+      `;
+
+      const actions = document.createElement("div");
+      actions.className = "card-actions";
+
+      const discordLabel = "📋 Discord: " + item.organization;
+      const radioLabel = "📻 /dep " + item.organization;
+
+      const discordButton = document.createElement("button");
+      discordButton.type = "button";
+      discordButton.className = "copy-button";
+      discordButton.textContent = discordLabel;
+      discordButton.addEventListener("click", () => {
+        const text = `${item.day} — ${item.organization} — ${item.time}`;
+        copyText(text, discordButton, discordLabel);
+      });
+
+      const radioButton = document.createElement("button");
+      radioButton.type = "button";
+      radioButton.className = "copy-button secondary";
+      radioButton.textContent = radioLabel;
+      radioButton.addEventListener("click", () => {
+        const text = `/dep ${item.organization} — ${item.time}`;
+        copyText(text, radioButton, radioLabel);
+      });
+
+      actions.append(discordButton, radioButton);
+      card.append(day, info, actions);
+      container.appendChild(card);
     });
   </script>
 </body>
