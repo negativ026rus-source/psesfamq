@@ -442,9 +442,9 @@
         }
       });
 
-      const certs = isWeekly()
-        ? number(state.counts[1]) + number(state.counts[2])
-        : number(state.counts[1]);
+      const certsDay = number(state.counts[1]);
+      const certsNight = isWeekly() ? number(state.counts[2]) : 0;
+      const certs = certsDay + certsNight;
       const checks = number(state.counts[6]);
 
       const req = state.reqs[state.goal];
@@ -469,32 +469,34 @@
         : `${item.ok ? "✔" : "✖"} ${item.text}: ${format(item.have)}${item.unit || ""} / ${format(item.need)}${item.unit || ""}`
       );
 
-      const name = state.name.trim() || "Не указано";
-      const staticId = state.staticId.trim() || "Не указано";
-
-      const certsLine = isWeekly()
-        ? `Справки: день ${format(number(state.counts[1]))} + ночь ${format(number(state.counts[2]))} = ${format(certs)}`
-        : `Справки (день + ночь): ${format(certs)}`;
-
       const verdict = isWeekly()
         ? (allOK ? "Отчёт принят ✅" : "Отчёт не принят ❌")
         : (allOK ? "Требования выполнены ✅" : "Требования не выполнены ❌");
 
-      const text =
-`**${GOALS[state.goal].title}**
-Сотрудник: ${name}
-Статический ID: ${staticId}
-${isWeekly() && state.instructor ? "Инструктор: ДА\n" : ""}
-${lines.length ? lines.join("\n") : "• Действия пока не указаны"}
+      /* шапка: только заполненные поля */
+      const head = [`**${GOALS[state.goal].title}**`];
+      if (state.name.trim()) head.push(`Сотрудник: ${state.name.trim()}`);
+      if (state.staticId.trim()) head.push(`Статический ID: ${state.staticId.trim()}`);
+      if (isWeekly() && state.instructor) head.push("Инструктор: ДА");
 
-**Всего баллов: ${format(totalPoints)}**
-${certsLine}
-Время на посту: ${format(duty)} мин
-Гос. проверок: ${format(checks)}
+      /* сводка: только строки с ненулевыми значениями */
+      const summary = [`**Всего баллов: ${format(totalPoints)}**`];
+      if (isWeekly()) {
+        if (certsDay > 0) summary.push(`Справки (день): ${format(certsDay)}`);
+        if (certsNight > 0) summary.push(`Справки (ночь): ${format(certsNight)}`);
+      } else if (certs > 0) {
+        summary.push(`Справки: ${format(certs)}`);
+      }
+      if (duty > 0) summary.push(`Время на посту: ${format(duty)} мин`);
+      if (checks > 0) summary.push(`Гос. проверок: ${format(checks)}`);
 
-${detail.join("\n")}
-
-**Результат: ${verdict}**`;
+      const text = [
+        head.join("\n"),
+        lines.length ? lines.join("\n") : "",
+        summary.join("\n"),
+        detail.join("\n"),
+        `**Результат: ${verdict}**`
+      ].filter(part => part && part.trim()).join("\n\n");
 
       document.getElementById("result").textContent = text;
     }
