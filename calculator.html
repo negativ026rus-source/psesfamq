@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Калькулятор баллов ПСЭС</title>
+  <style>
+    :root {
+      --bg: #1b1b1f;
+      --card: #27272c;
+      --field: #34343b;
+      --border: #45454e;
+      --text: #ededf2;
+      --muted: #a4a4b0;
+      --accent: #8172f2;
+      --accent-strong: #5b4be0;
+      --danger: #e05252;
+      --ok: #5cd98c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 26px 14px 60px;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 "Segoe UI", Arial, sans-serif;
+    }
+
+    .app {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 26px 26px 30px;
+      border-radius: 16px;
+      background: var(--card);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: 22px;
+      line-height: 1.3;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 26px 0 12px;
+      font-size: 16px;
+    }
+
+    .accent { color: var(--accent); }
+
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .accent-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--field);
+      color: var(--text);
+      font: inherit;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(129, 114, 242, .25);
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--accent-strong);
+    }
+
+    .req-box {
+      margin: 10px 0 0;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent-strong);
+      border-radius: 8px;
+      background: #2d2d34;
+      color: #c9c9d4;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    details {
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: #2a2a30;
+    }
+
+    summary {
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 18px;
+    }
+
+    .two > .field-wide { grid-column: 1 / -1; }
+    .row-gap { margin-top: 16px; }
+
+    hr.sep {
+      margin: 24px 0;
+      border: 0;
+      border-top: 1px solid #3b3b43;
+    }
+
+    .duty-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr 46px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .duty-word {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .duty-remove {
+      width: 46px;
+      height: 41px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--danger);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-block {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--accent-strong);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-block:hover { background: #4b3cd0; }
+
+    .btn-ghost {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #c9c9d4;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 16px;
+      border-left: 4px solid var(--accent-strong);
+      border-radius: 8px;
+      background: #0d0d10;
+      text-align: center;
+    }
+
+    .status {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.bad { color: var(--danger); }
+
+    #report {
+      margin: 14px 0 0;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.6 Consolas, "Courier New", monospace;
+      color: #d6d6e0;
+    }
+
+    @media (max-width: 560px) {
+      .app { padding: 20px 16px 24px; }
+      .two { grid-template-columns: 1fr; }
+      .duty-row { grid-template-columns: auto 1fr auto 1fr 42px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>🏥 Калькулятор баллов ПСЭС (С любовью от Лобанова ♥)</h1>
+
+    <label class="accent-label" for="goal">Выберите цель отчета / ранг:</label>
+    <select id="goal"></select>
+    <div class="req-box" id="reqBox"></div>
+
+    <details>
+      <summary>Изменить требования цели</summary>
+      <div class="two row-gap">
+        <label>
+          <span class="field-label">Баллы</span>
+          <input id="reqPoints" type="number" min="0" step="1">
+        </label>
+        <label>
+          <span class="field-label">Справки</span>
+          <input id="reqCerts" type="number" min="0" step="1">
+        </label>
+        <label>
+          <span class="field-label">Время на посту, мин</span>
+          <input id="reqDuty" type="number" min="0" step="1">
+        </label>
+        <label>
+          <span class="field-label">Гос. проверки</span>
+          <input id="reqChecks" type="number" min="0" step="1">
+        </label>
+      </div>
+      <label class="check-row" id="examWrap">
+        <input id="examDone" type="checkbox">
+        Экзамен сдан: <span id="examTopic"></span>
+      </label>
+    </details>
+
+    <div class="two row-gap">
+      <label>
+        <span class="field-label">Имя Фамилия:</span>
+        <input id="name" placeholder="Например: Иван Иванов">
+      </label>
+      <label>
+        <span class="field-label">Статический ID:</span>
+        <input id="staticId" placeholder="Введите статический ID">
+      </label>
+    </div>
+
+    <hr class="sep">
+
+    <span class="accent-label">Временные промежутки дежурств:</span>
+    <div id="dutyRows"></div>
+    <button id="addDuty" class="btn-block" type="button">+ Добавить промежуток времени</button>
+
+    <hr class="sep">
+
+    <label class="check-row" style="margin-top:0">
+      <input id="instructor" type="checkbox">
+      Сотрудник является инструктором (доп. поля только в недельном отчёте)
+    </label>
+
+    <div class="two row-gap" id="fields"></div>
+
+    <details>
+      <summary>Баллы за действие</summary>
+      <div class="two row-gap" id="pointsGrid"></div>
+    </details>
+
+    <div class="result">
+      <div class="status bad" id="status">❌ Отчет не сдан</div>
+      <pre id="report"></pre>
+    </div>
+
+    <button id="copy" class="btn-block" type="button">Скопировать для Discord</button>
+    <button id="reset" class="btn-ghost" type="button">Сбросить количества</button>
+  </div>
+
+  <script>
+    /* mode: "all" — поле видно во всех режимах, "weekly" — только в недельном отчёте
+       instructor: true — только в недельном отчёте и при включённой галочке «инструктор»
+       direct: true — вводится готовая сумма баллов */
+    const ROWS = [
+      {
+        id: 3,
+        mode: "all",
+        label: "Вакцинации",
+        field: "Вакцинации (кол-во):",
+        points: 3
+      },
+      {
+        id: 6,
+        mode: "all",
+        label: "Проверка государственных структур",
+        field: "Гос. проверки (кол-во):",
+        points: 50
+      },
+      {
+        id: 1,
+        mode: "all",
+        label: "Выданные справки",
+        weeklyLabel: "Выданные справки (день)",
+        field: "Справки (кол-во):",
+        weeklyField: "Справки ДЕНЬ (кол-во):",
+        points: 4
+      },
+      {
+        id: 2,
+        mode: "weekly",
+        label: "Выданные справки (ночь)",
+        field: "Справки НОЧЬ (кол-во):",
+        points: 6
+      },
+      {
+        id: 4,
+        mode: "all",
+        label: "ПМП",
+        field: "Первая помощь ПМП (кол-во):",
+        points: 3
+      },
+      {
+        id: 5,
+        mode: "all",
+        label: "Выданные таблетки",
+        field: "Выданные таблетки (кол-во):",
+        points: 1
+      },
+      {
+        id: 7,
+        mode: "all",
+        label: "Доп. Баллы (поощрения)",
+        field: "Доп. Баллы (поощрения):",
+        direct: true
+      },
+      {
+        id: 8,
+        mode: "weekly",
+        label: "Выдача квалификации терапевт",
+        field: "Выдача квалификации терапевт (кол-во):",
+        points: 15,
+        instructor: true
+      },
+      {
+        id: 9,
+        mode: "weekly",
+        label: "Проверка отчёта на повышение",
+        field: "Проверка отчёта на повышение (кол-во):",
+        points: 20,
+        instructor: true
+      }
+    ];
+
+    const SLOTS = 10;
+    const DUTY_MINUTES = 30;
+    const DUTY_POINTS = 20;
+
+    const GOALS = {
+      "5-6": {
+        title: "Повышение с 5-го на 6-й ранг",
+        points: 100,
+        certs: 30,
+        duty: 30,
+        checks: 1,
+        exam: "Социофобия"
+      },
+      "6-7": {
+        title: "Повышение с 6-го на 7-й ранг",
+        points: 350,
+        certs: 40,
+        duty: 60,
+        checks: 1,
+        exam: "Депрессия"
+      },
+      "7-8": {
+        title: "Повышение с 7-го на 8-й ранг",
+        points: 400,
+        certs: 50,
+        duty: 90,
+        checks: 1,
+        exam: "Биполярное расстройство"
+      },
+      "8-9": {
+        title: "Повышение с 8-го на 9-й ранг",
+        points: 450,
+        certs: 80,
+        duty: 120,
+        checks: 2,
+        exam: "Шизофрения"
+      },
+      "weekly": {
+        title: "Недельный отчёт",
+        points: 600,
+        certs: 0,
+        duty: 0,
+        checks: 3,
+        exam: ""
+      }
+    };
+
+    const KEY = "pses-calculator-v11";
+
+    const defaultReqs = () => Object.fromEntries(
+      Object.keys(GOALS).map(key => [
+        key,
+        {
+          points: String(GOALS[key].points),
+          certs: String(GOALS[key].certs),
+          duty: String(GOALS[key].duty),
+          checks: String(GOALS[key].checks)
+        }
+      ])
+    );
+
+    const defaultExams = () =>
+      Object.fromEntries(Object.keys(GOALS).map(key => [key, false]));
+
+    const defaultPoints = () => Array.from({ length: SLOTS }, (_, i) => {
+      const row = ROWS.find(item => item.id === i);
+      return row && row.points !== undefined ? String(row.points) : "";
+    });
+
+    const state = {
+      name: "",
+      staticId: "",
+      goal: "5-6",
+      instructor: false,
+      counts: Array(SLOTS).fill(""),
+      points: defaultPoints(),
+      dutyIntervals: [],
+      reqs: defaultReqs(),
+      exams: defaultExams()
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+
+      if (saved && typeof saved === "object") {
+        if (typeof saved.name === "string") state.name = saved.name;
+        if (typeof saved.staticId === "string") state.staticId = saved.staticId;
+        if (GOALS[saved.goal]) state.goal = saved.goal;
+        state.instructor = !!saved.instructor;
+
+        state.counts = Array.from(
+          { length: SLOTS },
+          (_, i) => saved.counts?.[i] ?? ""
+        );
+
+        state.points = Array.from({ length: SLOTS }, (_, i) => {
+          const stored = saved.points?.[i];
+
+          if (stored !== undefined && stored !== null && stored !== "") {
+            return String(stored);
+          }
+
+          const row = ROWS.find(item => item.id === i);
+          return row && row.points !== undefined ? String(row.points) : "";
+        });
+
+        state.dutyIntervals = Array.isArray(saved.dutyIntervals)
+          ? saved.dutyIntervals.map(item => ({
+              start: (item && item.start) || "",
+              end: (item && item.end) || ""
+            }))
+          : [];
+
+        state.reqs = { ...defaultReqs(), ...(saved.reqs || {}) };
+        state.exams = { ...defaultExams(), ...(saved.exams || {}) };
+      }
+    } catch {}
+
+    const number = value => {
+      const n = Number(value);
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    };
+
+    const format = n => String(Math.round(n * 100) / 100);
+    const isWeekly = () => state.goal === "weekly";
+
+    function save() {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    }
+
+    function visibleRows() {
+      return ROWS.filter(row => {
+        if (row.instructor && (!state.instructor || !isWeekly())) return false;
+        return row.mode === "all" || isWeekly();
+      });
+    }
+
+    function labelFor(row) {
+      return isWeekly() ? (row.weeklyLabel || row.label) : row.label;
+    }
+
+    function fieldFor(row) {
+      return isWeekly() ? (row.weeklyField || row.field) : row.field;
+    }
+
+    /* ---------- поля количества ---------- */
+
+    function buildFields() {
+      const box = document.getElementById("fields");
+      box.innerHTML = "";
+
+      visibleRows().forEach(row => {
+        const wrap = document.createElement("label");
+        wrap.className = row.direct ? "field-wide" : "";
+
+        const caption = document.createElement("span");
+        caption.className = row.direct ? "accent-label" : "field-label";
+        caption.textContent = fieldFor(row);
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = "0";
+        input.step = row.direct ? "0.1" : "1";
+        input.placeholder = "0";
+        input.value = row.direct ? state.points[row.id] : state.counts[row.id];
+
+        input.addEventListener("input", event => {
+          if (row.direct) {
+            state.points[row.id] = event.target.value;
+          } else {
+            state.counts[row.id] = event.target.value;
+          }
+          save();
+          update();
+        });
+
+        wrap.appendChild(caption);
+        wrap.appendChild(input);
+        box.appendChild(wrap);
+      });
+    }
+
+    /* ---------- баллы за действие ---------- */
+
+    function buildPointsGrid() {
+      const box = document.getElementById("pointsGrid");
+      box.innerHTML = "";
+
+      ROWS.filter(row => !row.direct).forEach(row => {
+        const wrap = document.createElement("label");
+
+        const caption = document.createElement("span");
+        caption.className = "field-label";
+        caption.textContent = row.label;
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = "0";
+        input.step = "0.1";
+        input.value = state.points[row.id];
+
+        input.addEventListener("input", event => {
+          state.points[row.id] = event.target.value;
+          save();
+          update();
+        });
+
+        wrap.appendChild(caption);
+        wrap.appendChild(input);
+        box.appendChild(wrap);
+      });
+    }
+
+    /* ---------- дежурства ---------- */
+
+    function buildDutyRows() {
+      const box = document.getElementById("dutyRows");
+      box.innerHTML = "";
+
+      if (state.dutyIntervals.length === 0) {
+        state.dutyIntervals.push({ start: "", end: "" });
+      }
+
+      state.dutyIntervals.forEach((interval, index) => {
+        const row = document.createElement("div");
+        row.className = "duty-row";
+
+        const from = document.createElement("span");
+        from.className = "duty-word";
+        from.textContent = "С";
+
+        const start = document.createElement("input");
+        start.type = "time";
+        start.value = interval.start;
+        start.addEventListener("input", event => {
+          state.dutyIntervals[index].start = event.target.value;
+          save();
+          update();
+        });
+
+        const to = document.createElement("span");
+        to.className = "duty-word";
+        to.textContent = "До";
+
+        const end = document.createElement("input");
+        end.type = "time";
+        end.value = interval.end;
+        end.addEventListener("input", event => {
+          state.dutyIntervals[index].end = event.target.value;
+          save();
+          update();
+        });
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "duty-remove";
+        remove.textContent = "✕";
+        remove.setAttribute("aria-label", "Удалить промежуток");
+        remove.addEventListener("click", () => {
+          state.dutyIntervals.splice(index, 1);
+          save();
+          buildDutyRows();
+          update();
+        });
+
+        row.appendChild(from);
+        row.appendChild(start);
+        row.appendChild(to);
+        row.appendChild(end);
+        row.appendChild(remove);
+        box.appendChild(row);
+      });
+    }
+
+    function getDutySummary() {
+      let totalMinutes = 0;
+      const entries = [];
+
+      state.dutyIntervals.forEach(interval => {
+        if (!interval.start || !interval.end) return;
+
+        const [sh, sm] = interval.start.split(":").map(Number);
+        const [eh, em] = interval.end.split(":").map(Number);
+
+        const start = sh * 60 + sm;
+        let end = eh * 60 + em;
+
+        if (end < start) end += 24 * 60;
+
+        const minutes = end - start;
+        if (minutes <= 0) return;
+
+        totalMinutes += minutes;
+        entries.push({
+          start: interval.start,
+          end: interval.end,
+          minutes
+        });
+      });
+
+      return { totalMinutes, entries };
+    }
+
+    /* ---------- требования цели ---------- */
+
+    function updateReqBox() {
+      const req = state.reqs[state.goal];
+      const parts = [];
+
+      if (number(req.points) > 0) {
+        parts.push(`${format(number(req.points))} баллов`);
+      }
+      if (number(req.certs) > 0) {
+        parts.push(`справки: ${format(number(req.certs))}`);
+      }
+      if (number(req.duty) > 0) {
+        parts.push(`пост: ${format(number(req.duty))} мин`);
+      }
+      if (number(req.checks) > 0) {
+        parts.push(`гос. проверки: ${format(number(req.checks))}`);
+      }
+      if (GOALS[state.goal].exam) {
+        parts.push(`экзамен «${GOALS[state.goal].exam}»`);
+      }
+
+      document.getElementById("reqBox").textContent =
+        parts.length ? `Требуется: ${parts.join(" · ")}` : "Требования не заданы";
+    }
+
+    function loadGoal() {
+      const req = state.reqs[state.goal];
+
+      document.getElementById("reqPoints").value = req.points;
+      document.getElementById("reqCerts").value = req.certs;
+      document.getElementById("reqDuty").value = req.duty;
+      document.getElementById("reqChecks").value = req.checks;
+
+      const exam = GOALS[state.goal].exam;
+      document.getElementById("examWrap").style.display = exam ? "flex" : "none";
+      document.getElementById("examTopic").textContent = exam;
+      document.getElementById("examDone").checked = !!state.exams[state.goal];
+
+      updateReqBox();
+      buildFields();
+      update();
+    }
+
+    /* ---------- расчёт ---------- */
+
+    function update() {
+      let totalPoints = 0;
+      const lines = [];
+
+      const dutySummary = getDutySummary();
+      const duty = dutySummary.totalMinutes;
+      const dutyPoints = duty / DUTY_MINUTES * DUTY_POINTS;
+
+      totalPoints += dutyPoints;
+
+      if (duty > 0) {
+        lines.push(
+          `• Дежурства: ${format(duty)} мин × ${DUTY_POINTS} балл. за ${DUTY_MINUTES} мин = ${format(dutyPoints)} балл.`
+        );
+
+        dutySummary.entries.forEach((entry, i) => {
+          lines.push(
+            `   ${i + 1}) ${entry.start}–${entry.end} = ${format(entry.minutes)} мин`
+          );
+        });
+      }
+
+      visibleRows().forEach(row => {
+        if (row.direct) {
+          const bonus = number(state.points[row.id]);
+          totalPoints += bonus;
+
+          if (bonus > 0) {
+            lines.push(`• ${row.label}: +${format(bonus)} балл.`);
+          }
+          return;
+        }
+
+        const count = number(state.counts[row.id]);
+        const per = number(state.points[row.id]);
+        const subtotal = count * per;
+
+        totalPoints += subtotal;
+
+        if (count > 0) {
+          lines.push(
+            `• ${labelFor(row)}: ${format(count)} × ${format(per)} = ${format(subtotal)} балл.`
+          );
+        }
+      });
+
+      const certsDay = number(state.counts[1]);
+      const certsNight = isWeekly() ? number(state.counts[2]) : 0;
+      const certs = certsDay + certsNight;
+      const checks = number(state.counts[6]);
+
+      const req = state.reqs[state.goal];
+      const need = {
+        points: number(req.points),
+        certs: number(req.certs),
+        duty: number(req.duty),
+        checks: number(req.checks)
+      };
+
+      const exam = GOALS[state.goal].exam;
+      const items = [];
+
+      items.push({
+        ok: totalPoints >= need.points,
+        text: "Баллы",
+        have: totalPoints,
+        need: need.points
+      });
+
+      if (need.certs > 0) {
+        items.push({
+          ok: certs >= need.certs,
+          text: "Справки",
+          have: certs,
+          need: need.certs
+        });
+      }
+
+      if (need.duty > 0) {
+        items.push({
+          ok: duty >= need.duty,
+          text: "Время на посту",
+          have: duty,
+          need: need.duty,
+          unit: " мин"
+        });
+      }
+
+      if (need.checks > 0) {
+        items.push({
+          ok: checks >= need.checks,
+          text: "Гос. проверки",
+          have: checks,
+          need: need.checks
+        });
+      }
+
+      if (exam) {
+        items.push({
+          ok: !!state.exams[state.goal],
+          text: `Экзамен «${exam}»`,
+          plain: true
+        });
+      }
+
+      const allOK = items.every(item => item.ok);
+
+      const detail = items.map(item => item.plain
+        ? `${item.ok ? "✔" : "✖"} ${item.text}`
+        : `${item.ok ? "✔" : "✖"} ${item.text}: ${format(item.have)}${item.unit || ""} / ${format(item.need)}${item.unit || ""}`
+      );
+
+      const verdict = isWeekly()
+        ? (allOK ? "✅ Отчёт сдан" : "❌ Отчёт не сдан")
+        : (allOK ? "✅ Требования выполнены" : "❌ Требования не выполнены");
+
+      const head = [`**${GOALS[state.goal].title}**`];
+
+      if (state.name.trim()) {
+        head.push(`Сотрудник: ${state.name.trim()}`);
+      }
+      if (state.staticId.trim()) {
+        head.push(`Статический ID: ${state.staticId.trim()}`);
+      }
+      if (isWeekly() && state.instructor) {
+        head.push("Инструктор: ДА");
+      }
+
+      const summary = [`**Всего баллов: ${format(totalPoints)}**`];
+
+      if (isWeekly()) {
+        if (certsDay > 0) {
+          summary.push(`Справки (день): ${format(certsDay)}`);
+        }
+        if (certsNight > 0) {
+          summary.push(`Справки (ночь): ${format(certsNight)}`);
+        }
+      } else if (certs > 0) {
+        summary.push(`Справки: ${format(certs)}`);
+      }
+
+      if (duty > 0) {
+        summary.push(`Время на посту: ${format(duty)} мин`);
+      }
+      if (checks > 0) {
+        summary.push(`Гос. проверок: ${format(checks)}`);
+      }
+
+      const text = [
+        head.join("\n"),
+        lines.length ? lines.join("\n") : "",
+        summary.join("\n"),
+        detail.join("\n"),
+        `**Результат: ${verdict}**`
+      ]
+        .filter(part => part && part.trim())
+        .join("\n\n");
+
+      const status = document.getElementById("status");
+      status.textContent = verdict;
+      status.className = "status " + (allOK ? "ok" : "bad");
+
+      document.getElementById("report").textContent = text;
+    }
+
+    /* ---------- обработчики ---------- */
+
+    const goalSelect = document.getElementById("goal");
+
+    Object.entries(GOALS).forEach(([key, goal]) => {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = goal.points
+        ? `${goal.title} (${goal.points} баллов)`
+        : goal.title;
+      goalSelect.appendChild(option);
+    });
+
+    goalSelect.addEventListener("change", event => {
+      state.goal = event.target.value;
+      save();
+      loadGoal();
+    });
+
+    document.getElementById("instructor").addEventListener("change", event => {
+      state.instructor = event.target.checked;
+      save();
+      buildFields();
+      update();
+    });
+
+    ["reqPoints", "reqCerts", "reqDuty", "reqChecks"].forEach(id => {
+      document.getElementById(id).addEventListener("input", event => {
+        const field = id.replace("req", "").toLowerCase();
+        state.reqs[state.goal][field] = event.target.value;
+        save();
+        updateReqBox();
+        update();
+      });
+    });
+
+    document.getElementById("examDone").addEventListener("change", event => {
+      state.exams[state.goal] = event.target.checked;
+      save();
+      update();
+    });
+
+    document.getElementById("name").addEventListener("input", event => {
+      state.name = event.target.value;
+      save();
+      update();
+    });
+
+    document.getElementById("staticId").addEventListener("input", event => {
+      state.staticId = event.target.value;
+      save();
+      update();
+    });
+
+    document.getElementById("addDuty").addEventListener("click", () => {
+      state.dutyIntervals.push({ start: "", end: "" });
+      save();
+      buildDutyRows();
+      update();
+    });
+
+    document.getElementById("copy").addEventListener("click", async () => {
+      const text = document.getElementById("report").textContent;
+
+      try {
+        await navigator.clipboard.writeText(text);
+
+        const button = document.getElementById("copy");
+        button.textContent = "Скопировано!";
+
+        setTimeout(() => {
+          button.textContent = "Скопировать для Discord";
+        }, 1500);
+      } catch {
+        alert("Не удалось скопировать. Выделите текст результата и скопируйте вручную.");
+      }
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      state.counts = Array(SLOTS).fill("");
+      state.points = defaultPoints();
+      state.dutyIntervals = [{ start: "", end: "" }];
+
+      save();
+      buildDutyRows();
+      buildFields();
+      buildPointsGrid();
+      update();
+    });
+
+    /* ---------- запуск ---------- */
+
+    document.getElementById("name").value = state.name;
+    document.getElementById("staticId").value = state.staticId;
+    document.getElementById("instructor").checked = !!state.instructor;
+    goalSelect.value = state.goal;
+
+    buildDutyRows();
+    buildPointsGrid();
+    loadGoal();
+  </script>
+</body>
+</html>
