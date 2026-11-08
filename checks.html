@@ -231,6 +231,8 @@
 **Присутствие в голосовом канале нашего отдела ОБЯЗАТЕЛЬНО! **
 *Ждём тут https://discord.com/channels/1538939092929216603/1538939110469931134 *`;
 
+    const armyRadioText = `/dep к Армия: Уведомляю Вас о том что, сегодня у вас в 20:30 будет проведена проверка медицинских справок согласно закону города Москвы "О Здравоохранении" Глава IV,ст.8,ч1,п.Г. Просим собрать состав к этому времени.`;
+
     const schedule = [
       {
         short: "ПН",
@@ -245,7 +247,8 @@
         day: "Вторник",
         organization: "Армия",
         time: "20:30",
-        discordText: armyDiscordText
+        discordText: armyDiscordText,
+        radioText: armyRadioText
       },
       {
         short: "СР",
@@ -363,7 +366,8 @@
         radioButton.className = "copy-button secondary";
         radioButton.textContent = radioLabel;
         radioButton.addEventListener("click", () => {
-          const text = `/dep ${item.organization} — ${item.time}`;
+          const text = item.radioText ||
+            `/dep ${item.organization} — ${item.time}`;
 
           copyText(text, radioButton, radioLabel);
         });
