@@ -13,7 +13,7 @@
       --text: #f1f4fa;
       --muted: #a7adba;
       --cyan: #31d7ff;
-      --blue: #387ff5;
+      --purple: #7654df;
     }
 
     * { box-sizing: border-box; }
@@ -45,7 +45,7 @@
     .back:hover { text-decoration: underline; }
 
     header {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       padding: 24px;
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -64,6 +64,40 @@
       margin: 0;
       color: var(--muted);
       line-height: 1.5;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .copy-button {
+      min-height: 48px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--purple);
+      color: white;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .copy-button:hover {
+      background: #6341d0;
+      transform: translateY(-1px);
+    }
+
+    .copy-button.secondary {
+      border: 1px solid rgba(49, 215, 255, .45);
+      background: #153347;
+    }
+
+    .copy-button.secondary:hover {
+      background: #1b4b66;
     }
 
     .schedule {
@@ -126,7 +160,7 @@
     .note {
       margin-top: 20px;
       padding: 14px 16px;
-      border-left: 3px solid var(--blue);
+      border-left: 3px solid var(--purple);
       border-radius: 8px;
       background: var(--card);
       color: var(--muted);
@@ -136,8 +170,9 @@
 
     @media (max-width: 560px) {
       body { padding: 18px 12px 36px; }
-
       header { padding: 20px; }
+
+      .actions { grid-template-columns: 1fr; }
 
       .check-card {
         grid-template-columns: 58px 1fr;
@@ -171,6 +206,15 @@
       <h1>Информация о проверках</h1>
       <p>Расписание проверок организаций ПСЭС.</p>
     </header>
+
+    <div class="actions">
+      <button class="copy-button" id="copyDiscord" type="button">
+        Скопировать расписание для Discord
+      </button>
+      <button class="copy-button secondary" id="copyRadio" type="button">
+        Скопировать для рации (/dep)
+      </button>
+    </div>
 
     <section class="schedule" aria-label="Расписание проверок">
       <article class="check-card">
@@ -238,8 +282,77 @@
     </section>
 
     <div class="note">
-      Время указано по стандартному расписанию.
+      Время указано по расписанию на предоставленном изображении.
     </div>
   </main>
+
+  <script>
+    const schedule = [
+      { day: "Понедельник", organization: "Больница", time: "20:30" },
+      { day: "Вторник", organization: "Армия", time: "20:30" },
+      { day: "Среда", organization: "Вести Москвы", time: "19:00" },
+      { day: "Четверг", organization: "ФСБ", time: "19:00" },
+      { day: "Пятница", organization: "МВД", time: "19:00" },
+      { day: "Суббота", organization: "Правительство", time: "17:00" },
+      { day: "Суббота", organization: "ГИБДД", time: "19:00" }
+    ];
+
+    const discordText = [
+      "**Расписание проверок ПСЭС**",
+      "",
+      ...schedule.map(item =>
+        `${item.day} — ${item.organization} — ${item.time}`
+      )
+    ].join("\n");
+
+    const radioText = schedule
+      .map(item => `/dep ${item.organization} — ${item.time}`)
+      .join("\n");
+
+    async function copyText(text, button, originalLabel) {
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = "Скопировано!";
+      } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        const copied = document.execCommand("copy");
+        textarea.remove();
+
+        button.textContent = copied
+          ? "Скопировано!"
+          : "Не удалось скопировать";
+
+        if (!copied) {
+          alert("Не удалось скопировать текст. Попробуйте вручную.");
+        }
+      }
+
+      setTimeout(() => {
+        button.textContent = originalLabel;
+      }, 1800);
+    }
+
+    document.getElementById("copyDiscord").addEventListener("click", event => {
+      copyText(
+        discordText,
+        event.currentTarget,
+        "Скопировать расписание для Discord"
+      );
+    });
+
+    document.getElementById("copyRadio").addEventListener("click", event => {
+      copyText(
+        radioText,
+        event.currentTarget,
+        "Скопировать для рации (/dep)"
+      );
+    });
+  </script>
 </body>
 </html>
