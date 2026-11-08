@@ -476,6 +476,10 @@
         ? `Справки: день ${format(number(state.counts[1]))} + ночь ${format(number(state.counts[2]))} = ${format(certs)}`
         : `Справки (день + ночь): ${format(certs)}`;
 
+      const verdict = isWeekly()
+        ? (allOK ? "Отчёт принят ✅" : "Отчёт не принят ❌")
+        : (allOK ? "Требования выполнены ✅" : "Требования не выполнены ❌");
+
       const text =
 `**${GOALS[state.goal].title}**
 Сотрудник: ${name}
@@ -490,7 +494,7 @@ ${certsLine}
 
 ${detail.join("\n")}
 
-**Результат: ${allOK ? "Отчёт принят ✅" : "Отчёт не принят ❌"}**`;
+**Результат: ${verdict}**`;
 
       document.getElementById("result").textContent = text;
     }
