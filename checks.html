@@ -228,7 +228,8 @@
         day: "Понедельник",
         organization: "Больница",
         time: "20:30",
-        discordText: hospitalDiscordText
+        discordText: hospitalDiscordText,
+        noRadio: true
       },
       {
         short: "ВТ",
@@ -331,28 +332,35 @@
       const actions = document.createElement("div");
       actions.className = "card-actions";
 
+      const discordLabel = `📋 Discord: ${item.organization}`;
       const discordButton = document.createElement("button");
       discordButton.type = "button";
       discordButton.className = "copy-button";
-      discordButton.textContent = `📋 Discord: ${item.organization}`;
+      discordButton.textContent = discordLabel;
       discordButton.addEventListener("click", () => {
         const text = item.discordText ||
           `${item.day} — ${item.organization} — ${item.time}`;
 
-        copyText(text, discordButton, `📋 Discord: ${item.organization}`);
+        copyText(text, discordButton, discordLabel);
       });
 
-      const radioButton = document.createElement("button");
-      radioButton.type = "button";
-      radioButton.className = "copy-button secondary";
-      radioButton.textContent = `📻 /dep ${item.organization}`;
-      radioButton.addEventListener("click", () => {
-        const text = `/dep ${item.organization} — ${item.time}`;
+      actions.append(discordButton);
 
-        copyText(text, radioButton, `📻 /dep ${item.organization}`);
-      });
+      if (!item.noRadio) {
+        const radioLabel = `📻 /dep ${item.organization}`;
+        const radioButton = document.createElement("button");
+        radioButton.type = "button";
+        radioButton.className = "copy-button secondary";
+        radioButton.textContent = radioLabel;
+        radioButton.addEventListener("click", () => {
+          const text = `/dep ${item.organization} — ${item.time}`;
 
-      actions.append(discordButton, radioButton);
+          copyText(text, radioButton, radioLabel);
+        });
+
+        actions.append(radioButton);
+      }
+
       card.append(day, info, actions);
       container.appendChild(card);
     });
