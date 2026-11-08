@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Информация о проверках — ПСЭС</title>
+  <style>
+    :root {
+      --bg: #080b11;
+      --card: #151922;
+      --card-light: #1d2330;
+      --border: #343d4d;
+      --text: #f1f4fa;
+      --muted: #a7adba;
+      --cyan: #31d7ff;
+      --blue: #387ff5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 28px 16px 50px;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(0, 177, 255, .14), transparent 38%),
+        var(--bg);
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: var(--cyan);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover { text-decoration: underline; }
+
+    header {
+      margin-bottom: 24px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(49, 215, 255, .18), transparent 40%),
+        linear-gradient(135deg, #172235, #11151e);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .3);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 5vw, 38px);
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .schedule {
+      display: grid;
+      gap: 12px;
+    }
+
+    .check-card {
+      display: grid;
+      grid-template-columns: 76px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      min-height: 92px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: linear-gradient(115deg, var(--card-light), var(--card));
+      box-shadow: 0 8px 22px rgba(0, 0, 0, .2);
+    }
+
+    .day {
+      display: grid;
+      width: 64px;
+      height: 60px;
+      place-items: center;
+      border: 1px solid rgba(49, 215, 255, .55);
+      border-radius: 12px;
+      background: rgba(22, 135, 190, .15);
+      color: var(--cyan);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .org {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .time {
+      min-width: 112px;
+      padding: 10px 14px;
+      border: 1px solid rgba(49, 215, 255, .4);
+      border-radius: 24px;
+      background: rgba(33, 111, 163, .16);
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .note {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--blue);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 560px) {
+      body { padding: 18px 12px 36px; }
+
+      header { padding: 20px; }
+
+      .check-card {
+        grid-template-columns: 58px 1fr;
+        gap: 12px;
+        padding: 13px;
+      }
+
+      .day {
+        width: 54px;
+        height: 52px;
+        font-size: 14px;
+      }
+
+      .org { font-size: 16px; }
+
+      .time {
+        grid-column: 2;
+        justify-self: start;
+        min-width: 100px;
+        padding: 8px 13px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="index.html">← На главную</a>
+
+    <header>
+      <h1>Информация о проверках</h1>
+      <p>Расписание проверок организаций ПСЭС.</p>
+    </header>
+
+    <section class="schedule" aria-label="Расписание проверок">
+      <article class="check-card">
+        <div class="day">ПН</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">Больница</div>
+        </div>
+        <div class="time">20:30</div>
+      </article>
+
+      <article class="check-card">
+        <div class="day">ВТ</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">Армия</div>
+        </div>
+        <div class="time">20:30</div>
+      </article>
+
+      <article class="check-card">
+        <div class="day">СР</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">Вести Москвы</div>
+        </div>
+        <div class="time">19:00</div>
+      </article>
+
+      <article class="check-card">
+        <div class="day">ЧТ</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">ФСБ</div>
+        </div>
+        <div class="time">19:00</div>
+      </article>
+
+      <article class="check-card">
+        <div class="day">ПТ</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">МВД</div>
+        </div>
+        <div class="time">19:00</div>
+      </article>
+
+      <article class="check-card">
+        <div class="day">СБ</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">Правительство</div>
+        </div>
+        <div class="time">17:00</div>
+      </article>
+
+      <article class="check-card">
+        <div class="day">СБ</div>
+        <div>
+          <div class="label">Организация</div>
+          <div class="org">ГИБДД</div>
+        </div>
+        <div class="time">19:00</div>
+      </article>
+    </section>
+
+    <div class="note">
+      Время указано по расписанию на предоставленном изображении.
+    </div>
+  </main>
+</body>
+</html>
