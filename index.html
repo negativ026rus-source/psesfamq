@@ -283,3 +283,184 @@
         <div id="statusText" class="status fail">Отчет не сдан</div>
         <div style="font-size: 14px; background: #232428; padding: 10px; border-radius: 4px;">
             <div style="margin: 3px 0;">✨ Всего баллов: <strong id="totalPointsDisplay">0</strong> / <span id="normaDisplay">0</span></div>
+
+            var POINT_RATES = {
+medDay: 4,
+medNight: 6,
+medPromoDefault: 4,
+vaccine: 3,
+pmp: 3,
+pills: 1,
+audit: 50,
+therapistQual: 15,
+promoCheck: 20
+};
+var TARGET_REQUIREMENTS = {
+weekly_report: { name: "Еженедельный отчет", points: 600, meds: 0, time: 0, audits: 3, exam: "Не требуется", isWeekly: true },
+rank_5_6: { name: "Повышение с 5-го на 6-й ранг", points: 100, meds: 30, time: 30, audits: 1, exam: "«Социофобия»", isWeekly: false },
+rank_6_7: { name: "Повышение с 6-го на 7-й ранг", points: 350, meds: 40, time: 60, audits: 1, exam: "«Депрессия»", isWeekly: false },
+rank_7_8: { name: "Повышение с 7-го на 8-й ранг", points: 400, meds: 50, time: 90, audits: 1, exam: "«Биполярное расстройство»", isWeekly: false },
+rank_8_9: { name: "Повышение с 8-го на 9-й ранг", points: 450, meds: 80, time: 120, audits: 2, exam: "«Шизофрения»", isWeekly: false }
+};
+function addDutyField() {
+var container = document.getElementById('dutyContainer');
+var wrapper = document.createElement('div');
+wrapper.className = 'duty-input-wrapper';
+wrapper.innerHTML = 'С  До  ✕';
+container.appendChild(wrapper);
+calculatePoints();
+}
+function removeDutyField(button) {
+var container = document.getElementById('dutyContainer');
+if (container.children.length > 1) {
+button.parentElement.remove();
+} else {
+button.parentElement.querySelector('.duty-start').value = '';
+button.parentElement.querySelector('.duty-end').value = '';
+}
+calculatePoints();
+}
+function calculatePoints() {
+var username = document.getElementById('username').value || 'Не указан';
+var staticId = document.getElementById('staticId').value || '#00000';
+var currentTargetKey = document.getElementById('reportTarget').value;
+var req = TARGET_REQUIREMENTS[currentTargetKey];
+var isInstructor = document.getElementById('isInstructor').checked;
+if (isInstructor) {
+document.getElementById('instructorBlock').style.display = 'grid';
+} else {
+document.getElementById('instructorBlock').style.display = 'none';
+document.getElementById('therapistQual').value = 0;
+document.getElementById('promoCheck').value = 0;
+}
+if (req.isWeekly) {
+document.getElementById('weeklyMedsBlock').style.display = 'grid';
+document.getElementById('promotionMedsBlock').style.display = 'none';
+document.getElementById('targetInfo').innerHTML = 'Минимум для выполнения отчета:
+• Баллы: ' + req.points + ' б. | • Гос. проверки: минимум ' + req.audits + ' шт.
+Для еженедельного отчета фиксированные цензы на справки и время поста отсутствуют.';
+document.getElementById('medsRow').style.display = 'none';
+document.getElementById('timeRow').style.display = 'none';
+document.getElementById('auditRow').style.display = 'block';
+} else {
+document.getElementById('weeklyMedsBlock').style.display = 'none';
+document.getElementById('promotionMedsBlock').style.display = 'block';
+document.getElementById('targetInfo').innerHTML = 'Минимум для выполнения отчета:
+• Баллы: ' + req.points + ' б. | • Справки: ' + req.meds + ' шт.
+• Пост: ' + req.time + ' мин. | • Гос. проверки: ' + req.audits + ' шт.
+• Экзамен к сдаче: ' + req.exam + '';
+document.getElementById('medsRow').style.display = 'block';
+document.getElementById('timeRow').style.display = 'block';
+document.getElementById('auditRow').style.display = 'block';
+}
+var startInputs = document.querySelectorAll('.duty-start');
+var endInputs = document.querySelectorAll('.duty-end');
+var countTime = 0;
+var timeIntervalsText =;
+for (var i = 0; i < startInputs.length; i++) {
+var startVal = startInputs[i].value;
+var endVal = endInputs[i].value;
+if (startVal && endVal) {
+var startParts = startVal.split(':').map(Number);
+var endParts = endVal.split(':').map(Number);
+var startMinutes = startParts[0] * 60 + startParts[1];
+var endMinutes = endParts[0] * 60 + endParts[1];
+if (endMinutes < startMinutes) endMinutes += 1440;
+var diff = endMinutes - startMinutes;
+countTime += diff;
+timeIntervalsText.push(startVal + '-' + endVal + ' (' + diff + ' мин)');
+}
+}
+var countVaccine = parseInt(document.getElementById('vaccine').value) || 0;
+var countPmp = parseInt(document.getElementById('pmp').value) || 0;
+var countPills = parseInt(document.getElementById('pills').value) || 0;
+var countAudit = parseInt(document.getElementById('audit').value) || 0;
+var countExtra = parseInt(document.getElementById('extraPoints').value) || 0;
+var countQual = isInstructor ? (parseInt(document.getElementById('therapistQual').value) || 0) : 0;
+var countPromoCheck = isInstructor ? (parseInt(document.getElementById('promoCheck').value) || 0) : 0;
+var totalMedsCount = 0;
+var pMedsScore = 0;
+var medsLoggedText = '';
+if (req.isWeekly) {
+var countMedDay = parseInt(document.getElementById('medDay').value) || 0;
+var countMedNight = parseInt(document.getElementById('medNight').value) || 0;
+totalMedsCount = countMedDay + countMedNight;
+pMedsScore = (countMedDay * POINT_RATES.medDay) + (countMedNight * POINT_RATES.medNight);
+medsLoggedText = '• Справки (День): ' + countMedDay + ' шт. -> (+' + (countMedDay * POINT_RATES.medDay) + ' б.)\n• Справки (Ночь): ' + countMedNight + ' шт. -> (+' + (countMedNight * POINT_RATES.medNight) + ' б.)';
+} else {
+var countMedTotal = parseInt(document.getElementById('medTotalInput').value) || 0;
+totalMedsCount = countMedTotal;
+pMedsScore = countMedTotal * POINT_RATES.medPromoDefault;
+medsLoggedText = '• Медицинские справки (всего): ' + countMedTotal + ' шт. -> (+' + pMedsScore + ' б.)';
+}
+var fullDutyIntervals = Math.floor(countTime / 30);
+var pTime = fullDutyIntervals * 20;
+var pVaccine = countVaccine * POINT_RATES.vaccine;
+var pPmp = countPmp * POINT_RATES.pmp;
+var pPills = countPills * POINT_RATES.pills;
+var pAudit = countAudit * POINT_RATES.audit;
+var pQual = countQual * POINT_RATES.therapistQual;
+var pPromoCheck = countPromoCheck * POINT_RATES.promoCheck;
+var totalPoints = pTime + pMedsScore + pVaccine + pPmp + pPills + pAudit + countExtra + pQual + pPromoCheck;
+var checkPoints = totalPoints >= req.points;
+var checkMeds = req.isWeekly ? true : (totalMedsCount >= req.meds);
+var checkTime = req.isWeekly ? true : (countTime >= req.time);
+var checkAudits = countAudit >= req.audits;
+var isPassed = checkPoints && checkMeds && checkTime && checkAudits;
+var statusText = document.getElementById('statusText');
+if (isPassed) {
+statusText.innerText = "✅ Все условия и нормативы выполнены!";
+statusText.className = "status success";
+} else {
+var errors = [];
+if (!checkPoints) errors.push("баллов (еще " + (req.points - totalPoints) + " б.)");
+if (!checkMeds) errors.push("справок (еще " + (req.meds - totalMedsCount) + " шт.)");
+if (!checkTime) errors.push("времени на посту (еще " + (req.time - countTime) + " мин.)");
+if (!checkAudits) errors.push("гос. проверок (еще " + (req.audits - countAudit) + " шт.)");
+statusText.innerText = "❌ Отчет не готов! Не хватает: " + errors.join(', ');
+statusText.className = "status fail";
+}
+document.getElementById('totalPointsDisplay').innerText = totalPoints;
+document.getElementById('normaDisplay').innerText = req.points;
+document.getElementById('totalMedsDisplay').innerText = totalMedsCount;
+document.getElementById('normaMedsDisplay').innerText = req.meds;
+document.getElementById('totalTimeDisplay').innerText = countTime;
+document.getElementById('normaTimeDisplay').innerText = req.time;
+document.getElementById('totalAuditsDisplay').innerText = countAudit;
+document.getElementById('normaAuditsDisplay').innerText = req.audits;
+var intervalsString = timeIntervalsText.length > 0 ? " [" + timeIntervalsText.join(', ') + "]" : '';
+var examLine = !req.isWeekly ? "• Экзамен к сдаче: " + req.exam + "\n" : '';
+var instructorLoggedText = '';
+if (isInstructor) {
+instructorLoggedText = '• Выдача квалификаций терапевта: ' + countQual + ' шт. -> (+' + pQual + ' б.)\n• Проверка отчетов на повышение: ' + countPromoCheck + ' шт. -> (+' + pPromoCheck + ' б.)\n';
+}
+var discTitle = '[ОТЧЕТ СОТРУДНИКА ПСЭС | MAJESTIC RP]\n';
+var discUser = '• Имя Фамилия: ' + username + '\n';
+var discId = '• Статический ID: ' + staticId + '\n';
+var discPost = '• Должность: ' + (isInstructor ? 'Инструктор ПСЭС' : 'Сотрудник ПСЭС') + '\n';
+var discTarget = '• Направление: ' + req.name + '\n\n';
+var discWork = '[ВЫПОЛНЕННЫЕ ОБЪЕМЫ РАБОТЫ]\n';
+var discDuty = '• Дежурство на посту: ' + countTime + ' мин.' + intervalsString + ' -> Полных интервалов по 30 мин: ' + fullDutyIntervals + ' (+' + pTime + ' б.)\n';
+var discVac = '• Вакцинации: ' + countVaccine + ' шт. -> (+' + pVaccine + ' б.)\n';
+var discPmp = '• Оказание ПМП: ' + countPmp + ' шт. -> (+' + pPmp + ' б.)\n';
+var discPills = '• Выданные таблетки: ' + countPills + ' шт. -> (+' + pPills + ' б.)\n';
+var discAudit = '• Государственные проверки: ' + countAudit + ' шт. -> (+' + pAudit + ' б.)\n';
+var discExtra = '• Доп. Баллы (поощрения): ' + countExtra + ' б.\n';
+var discResults = '\n[ИТОГИ]\n• Набрано баллов всего: ' + totalPoints + ' / ' + req.points + ' б.\n• Текущий статус: ' + (isPassed ? 'ВЫПОЛНЕНО / ОДОБРЕНО' : 'НЕ ВЫПОЛНЕНО / ОТКЛОНЕНО');
+var finalDiscordText = '\n' + discTitle + discUser + discId + discPost + discTarget + discWork + discDuty + medsLoggedText + '\n' + discVac + discPmp + discPills + discAudit + instructorLoggedText + discExtra + examLine + discResults + '\n';
+document.getElementById('discordOutput').value = finalDiscordText;
+}
+function copyToClipboard() {
+var copyText = document.getElementById("discordOutput");
+copyText.select();
+copyText.setSelectionRange(0, 99999);
+navigator.clipboard.writeText(copyText.value);
+var btn = document.getElementById('copyBtn');
+btn.innerText = "✨ Отчет скопирован!";
+btn.className = "btn-submit copied";
+setTimeout(function() {
+btn.innerText = "📋 Скопировать отчет";
+btn.className = "btn-submit";
+}, 2000);
+}
+calculatePoints();
