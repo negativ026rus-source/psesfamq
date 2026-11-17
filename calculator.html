@@ -52,7 +52,8 @@
       position: relative;
       max-width: 800px;
       margin: 0 auto;
-      padding: 34px 34px 30px;
+      padding: 0;
+      overflow: hidden;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
@@ -64,22 +65,89 @@
       content: "";
       position: absolute;
       inset: 0 0 auto;
+      z-index: 4;
       height: 2px;
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
       background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
       opacity: .85;
     }
 
-    .back {
+    .hero {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero-img {
+      display: block;
+      width: 100%;
+      height: 252px;
+      object-fit: cover;
+      object-position: center 46%;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(10, 10, 18, .5) 0%, rgba(10, 10, 18, .1) 30%, rgba(17, 17, 25, .74) 76%, rgba(17, 17, 25, .97) 100%),
+        radial-gradient(120% 95% at 50% 122%, rgba(139, 124, 255, .24), transparent 62%);
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      padding: 0 34px 22px;
+      text-align: center;
+    }
+
+    .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      margin-bottom: 22px;
-      padding: 7px 14px;
-      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      padding: 4px 12px;
+      border: 1px solid rgba(139, 124, 255, .38);
       border-radius: 999px;
-      background: rgba(255, 255, 255, .04);
-      color: #b9b9cb;
+      background: rgba(12, 12, 20, .5);
+      backdrop-filter: blur(10px);
+      color: #d7d2ff;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px var(--accent-2);
+    }
+
+    .app-body { padding: 10px 34px 30px; }
+
+    .back {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 999px;
+      background: rgba(10, 10, 18, .52);
+      backdrop-filter: blur(10px);
+      color: #d4d4e4;
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
@@ -95,19 +163,22 @@
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(19px, 3.6vw, 24px);
+      margin: 0 0 6px;
+      color: #fff;
+      font-size: clamp(20px, 3.6vw, 26px);
       font-weight: 800;
-      line-height: 1.28;
+      line-height: 1.25;
       letter-spacing: -.02em;
       text-align: center;
+      text-shadow: 0 2px 22px rgba(0, 0, 0, .7);
     }
 
     .subtitle {
-      margin: 0 0 28px;
-      color: var(--muted);
+      margin: 0;
+      color: rgba(236, 236, 245, .74);
       font-size: 13.5px;
       text-align: center;
+      text-shadow: 0 1px 12px rgba(0, 0, 0, .6);
     }
 
     .accent-label {
@@ -403,6 +474,21 @@
       background: linear-gradient(180deg, var(--accent), var(--accent-2));
     }
 
+    .result-art {
+      position: absolute;
+      top: -34px;
+      right: -28px;
+      width: 200px;
+      height: 200px;
+      opacity: .2;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(circle at 58% 42%, #000 26%, transparent 70%);
+      mask-image: radial-gradient(circle at 58% 42%, #000 26%, transparent 70%);
+    }
+
+    .status,
+    #report { position: relative; }
+
     .status {
       display: block;
       font-size: 17px;
@@ -448,9 +534,13 @@
 
     @media (max-width: 620px) {
       body { padding: 22px 12px 56px; }
-      .app { padding: 24px 18px 22px; border-radius: 20px; }
+      .app { border-radius: 20px; }
+      .hero-img { height: 192px; }
+      .hero-text { padding: 0 18px 16px; }
+      .app-body { padding: 8px 18px 22px; }
       h1 { font-size: 20px; }
-      .subtitle { margin-bottom: 22px; font-size: 13px; }
+      .back { top: 12px; left: 12px; padding: 6px 12px; }
+      .result-art { width: 150px; height: 150px; top: -20px; right: -20px; }
       .two { grid-template-columns: 1fr; }
       .duty-row { grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) 40px; }
       .duty-remove { height: 42px; }
@@ -464,10 +554,17 @@
 </head>
 <body>
   <div class="app">
-    <a class="back" href="index.html">← На главную</a>
+    <header class="hero">
+      <img class="hero-img" src="assets/calc-hero.svg" alt="Приёмный покой отдела ПСЭС ночью" width="1200" height="400">
+      <a class="back" href="index.html">← На главную</a>
+      <div class="hero-text">
+        <span class="hero-badge">Отдел ПСЭС</span>
+        <h1>🏥 Калькулятор баллов ПСЭС</h1>
+        <p class="subtitle">Дежурства, полисы и баллы — с любовью от Лобанова ♥</p>
+      </div>
+    </header>
 
-    <h1>🏥 Калькулятор баллов ПСЭС</h1>
-    <p class="subtitle">Дежурства, полисы и баллы — с любовью от Лобанова ♥</p>
+    <div class="app-body">
 
     <label class="accent-label" for="goal">Выберите цель отчёта / ранг:</label>
     <select id="goal"></select>
@@ -531,12 +628,14 @@
     </details>
 
     <div class="result">
+      <img class="result-art" src="assets/calc-result.svg" alt="" aria-hidden="true" width="240" height="240">
       <div class="status bad" id="status">❌ Отчёт не сдан</div>
       <pre id="report"></pre>
     </div>
 
     <button id="copy" class="btn-block" type="button">Скопировать для Discord</button>
     <button id="reset" class="btn-ghost" type="button">Сбросить количества</button>
+    </div>
   </div>
 
   <script>
