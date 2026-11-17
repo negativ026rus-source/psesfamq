@@ -1,0 +1,1453 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080d">
+  <title>Отпуска сотрудников — ПСЭС</title>
+  <style>
+    :root {
+      color-scheme: dark;
+
+      --bg: #08080d;
+      --card-top: rgba(33, 33, 45, .94);
+      --card-bottom: rgba(17, 17, 25, .96);
+      --border: rgba(255, 255, 255, .085);
+      --border-strong: rgba(255, 255, 255, .16);
+      --text: #ededf5;
+      --muted: #9c9cae;
+      --accent: #8b7cff;
+      --accent-2: #4be1c4;
+      --accent-strong: #6f5cf5;
+      --warn: #ffcf6b;
+
+      --radius-lg: 24px;
+      --radius: 14px;
+      --shadow: 0 34px 90px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 44px 16px 76px;
+      background:
+        radial-gradient(900px 520px at 10% -12%, rgba(139, 124, 255, .24), transparent 62%),
+        radial-gradient(820px 500px at 92% -4%, rgba(75, 225, 196, .15), transparent 58%),
+        radial-gradient(760px 720px at 50% 118%, rgba(111, 92, 245, .18), transparent 62%),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.5 "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .app {
+      position: relative;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 4;
+      height: 2px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+      opacity: .85;
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero-img {
+      display: block;
+      width: 100%;
+      height: 244px;
+      object-fit: cover;
+      object-position: center 52%;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(10, 10, 18, .5) 0%, rgba(10, 10, 18, .1) 30%, rgba(17, 17, 25, .74) 76%, rgba(17, 17, 25, .97) 100%),
+        radial-gradient(120% 95% at 50% 122%, rgba(139, 124, 255, .24), transparent 62%);
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      padding: 0 34px 22px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+      padding: 4px 12px;
+      border: 1px solid rgba(139, 124, 255, .38);
+      border-radius: 999px;
+      background: rgba(12, 12, 20, .5);
+      backdrop-filter: blur(10px);
+      color: #d7d2ff;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px var(--accent-2);
+    }
+
+    .back {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 999px;
+      background: rgba(10, 10, 18, .52);
+      backdrop-filter: blur(10px);
+      color: #d4d4e4;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .back:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .09);
+      border-color: var(--border-strong);
+      transform: translateX(-2px);
+      text-decoration: none;
+    }
+
+    .back:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .7);
+      outline-offset: 2px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      color: #fff;
+      font-size: clamp(21px, 3.8vw, 27px);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -.025em;
+      text-align: center;
+      text-shadow: 0 2px 22px rgba(0, 0, 0, .7);
+    }
+
+    .subtitle {
+      margin: 0 auto;
+      max-width: 58ch;
+      color: rgba(236, 236, 245, .74);
+      font-size: 13.5px;
+      text-align: center;
+      text-shadow: 0 1px 12px rgba(0, 0, 0, .6);
+    }
+
+    .app-body { padding: 24px 30px 30px; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .segments {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .segment {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 17px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      transition: color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .segment:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .segment:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .8);
+      outline-offset: 2px;
+    }
+
+    .segment.is-active {
+      color: #fff;
+      background: linear-gradient(180deg, #8577ff, var(--accent-strong));
+      box-shadow: 0 8px 18px rgba(111, 92, 245, .34);
+    }
+
+    .segment-count {
+      min-width: 20px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .12);
+      color: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .segment.is-active .segment-count { background: rgba(255, 255, 255, .24); }
+
+    .search {
+      position: relative;
+      flex: 1 1 240px;
+      max-width: 320px;
+    }
+
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      width: 15px;
+      height: 15px;
+      color: #7d7d92;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 10px 13px 10px 36px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, .045);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .search input::placeholder { color: rgba(255, 255, 255, .28); }
+
+    .search input:hover {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, .07);
+    }
+
+    .search input:focus {
+      outline: none;
+      border-color: rgba(139, 124, 255, .62);
+      background: rgba(139, 124, 255, .09);
+      box-shadow: 0 0 0 3px rgba(139, 124, 255, .17);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .028);
+    }
+
+    .stat-icon {
+      display: grid;
+      flex: none;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(139, 124, 255, .22);
+      border-radius: 10px;
+      background: rgba(139, 124, 255, .12);
+      color: #cbc6ff;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 14.5px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-caption {
+      display: block;
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .list-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 20px 2px 10px;
+      color: var(--muted);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    #listCount {
+      color: #8f8fa4;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      text-transform: none;
+    }
+
+    .leave-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .leave-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(115deg, rgba(36, 36, 50, .9), rgba(18, 18, 26, .95));
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .04);
+      animation: rise .34s ease both;
+      transition: border-color .18s ease, background .18s ease;
+    }
+
+    .leave-card:hover {
+      border-color: rgba(139, 124, 255, .3);
+      background: linear-gradient(115deg, rgba(40, 40, 56, .94), rgba(20, 20, 29, .96));
+    }
+
+    .leave-card.status-soon { border-color: rgba(255, 207, 107, .26); }
+    .leave-card.status-planned { border-color: rgba(139, 124, 255, .24); }
+    .leave-card.status-done { opacity: .6; }
+    .leave-card.status-done:hover { opacity: .8; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border-radius: 13px;
+      background: linear-gradient(150deg, rgba(139, 124, 255, .95), rgba(75, 225, 196, .8));
+      box-shadow: 0 8px 18px rgba(111, 92, 245, .24), inset 0 1px 0 rgba(255, 255, 255, .35);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+    }
+
+    .leave-body { min-width: 0; }
+
+    .leave-head {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .leave-name {
+      margin: 0;
+      font-size: 16.5px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      padding: 3px 9px;
+      border: 1px solid rgba(75, 225, 196, .32);
+      border-radius: 999px;
+      background: rgba(75, 225, 196, .12);
+      color: #b9fff2;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .status-soon .badge {
+      border-color: rgba(255, 207, 107, .35);
+      background: rgba(255, 207, 107, .12);
+      color: #ffe3ac;
+    }
+
+    .status-planned .badge {
+      border-color: rgba(139, 124, 255, .35);
+      background: rgba(139, 124, 255, .13);
+      color: #d9d3ff;
+    }
+
+    .status-done .badge {
+      border-color: rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .06);
+      color: #b6b6c8;
+    }
+
+    .leave-position {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .leave-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+      margin-top: 9px;
+      color: #c7c7d8;
+      font-size: 12.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .meta-glyph {
+      color: var(--accent-2);
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .meta-days {
+      padding: 1px 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .035);
+      color: #b9b9cb;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .meta-left {
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-soon .meta-left { color: #ffd98a; }
+    .status-planned .meta-left { color: #c9c3ff; }
+    .status-done .meta-left { color: var(--muted); }
+
+    .leave-note {
+      margin: 8px 0 0;
+      color: #a9a9bc;
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .leave-card .leave-head { padding-right: 28px; }
+
+    .card-del {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      display: grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255, 255, 255, .34);
+      cursor: pointer;
+      font: inherit;
+      font-size: 17px;
+      line-height: 1;
+      transition: color .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .card-del:hover {
+      color: #ffb3b3;
+      background: rgba(255, 90, 90, .12);
+      border-color: rgba(255, 90, 90, .26);
+    }
+
+    .card-del:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .7);
+      outline-offset: 2px;
+    }
+
+    .add { margin: 14px 0 2px; }
+
+    .add-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 15px;
+      border: 1px dashed rgba(139, 124, 255, .45);
+      border-radius: 12px;
+      background: rgba(139, 124, 255, .1);
+      color: #d7d2ff;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      transition: color .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .add-toggle:hover {
+      background: rgba(139, 124, 255, .17);
+      border-color: rgba(139, 124, 255, .68);
+    }
+
+    .add-toggle:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .75);
+      outline-offset: 2px;
+    }
+
+    .add-plus {
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border-radius: 6px;
+      background: linear-gradient(150deg, #8d7fff, #2bb39c);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .add-form {
+      margin-top: 11px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .028);
+      animation: rise .28s ease both;
+    }
+
+    .add-form[hidden] { display: none; }
+
+    .add-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .field-wide { grid-column: 1 / -1; }
+
+    .field-label {
+      color: var(--muted);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .field-opt {
+      color: #6f6f84;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .045);
+      color: var(--text);
+      color-scheme: dark;
+      font: inherit;
+      font-size: 13px;
+      transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .field input::placeholder { color: rgba(255, 255, 255, .26); }
+
+    .field input:hover {
+      border-color: var(--border-strong);
+      background: rgba(255, 255, 255, .07);
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: rgba(139, 124, 255, .62);
+      background: rgba(139, 124, 255, .09);
+      box-shadow: 0 0 0 3px rgba(139, 124, 255, .17);
+    }
+
+    .field input.is-invalid {
+      border-color: rgba(255, 120, 120, .7);
+      background: rgba(255, 80, 80, .08);
+    }
+
+    .field input.is-invalid:focus {
+      box-shadow: 0 0 0 3px rgba(255, 90, 90, .18);
+    }
+
+    .form-error {
+      margin: 11px 0 0;
+      color: #ff9a9a;
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .form-error[hidden] { display: none; }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+      padding: 9px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      transition: color .18s ease, background .18s ease, border-color .18s ease, filter .18s ease;
+    }
+
+    .btn-primary {
+      border: 1px solid transparent;
+      background: linear-gradient(180deg, #8577ff, var(--accent-strong));
+      box-shadow: 0 8px 18px rgba(111, 92, 245, .3);
+      color: #fff;
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); }
+
+    .btn-primary:focus-visible,
+    .btn-ghost:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .75);
+      outline-offset: 2px;
+    }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .04);
+      color: #c9c9d8;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+    }
+
+    .empty {
+      display: grid;
+      place-items: center;
+      padding: 24px 18px 26px;
+      border: 1px dashed rgba(255, 255, 255, .13);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .02);
+      text-align: center;
+      animation: rise .34s ease both;
+    }
+
+    .empty img {
+      width: 132px;
+      height: 132px;
+      margin-bottom: 4px;
+      opacity: .92;
+    }
+
+    .empty h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .empty p {
+      margin: 0;
+      max-width: 46ch;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      padding: 14px 18px;
+      border: 1px solid rgba(139, 124, 255, .2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(139, 124, 255, .12), rgba(75, 225, 196, .05));
+      color: #c3c3d6;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .note-dot {
+      flex: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px var(--accent-2);
+    }
+
+    .note p { margin: 0; max-width: 68ch; }
+
+    ::selection {
+      background: rgba(139, 124, 255, .35);
+      color: #fff;
+    }
+
+    * { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .16) transparent; }
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .16);
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .26); }
+
+    @media (max-width: 720px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat:last-child { grid-column: 1 / -1; }
+      .stat-caption { font-size: 9.5px; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 22px 12px 52px; }
+      .app { border-radius: 20px; }
+      .hero-img { height: 196px; }
+      .hero-text { padding: 0 18px 16px; }
+      .back { top: 12px; left: 12px; padding: 6px 12px; }
+      .app-body { padding: 18px 16px 22px; }
+      h1 { font-size: 20px; }
+      .subtitle { font-size: 12.5px; }
+
+      .toolbar { gap: 10px; margin-bottom: 14px; }
+      .segments { width: 100%; }
+      .segment { flex: 1; justify-content: center; padding: 8px 12px; }
+      .search { flex-basis: 100%; max-width: none; }
+
+      .add-grid { grid-template-columns: 1fr; }
+      .add-form { padding: 13px; }
+      .form-actions .btn-primary,
+      .form-actions .btn-ghost { flex: 1; }
+
+      .stats { gap: 8px; }
+      .stat { padding: 10px 11px; gap: 9px; }
+      .stat strong { font-size: 13px; }
+      .stat-icon { width: 30px; height: 30px; font-size: 13px; }
+
+      .list-head { margin-top: 16px; }
+      .leave-card { padding: 12px 13px; gap: 11px; }
+      .avatar { width: 40px; height: 40px; border-radius: 12px; font-size: 13px; }
+      .leave-name { font-size: 15.5px; }
+      .leave-meta { font-size: 12px; }
+      .empty img { width: 112px; height: 112px; }
+      .empty h2 { font-size: 15px; }
+      .empty p { font-size: 12.5px; }
+      .note { font-size: 12.5px; padding: 12px 14px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <img class="hero-img" src="assets/leaves-hero.svg" alt="Отпуск сотрудника ПСЭС: чемодан, календарь и море за окном" width="1200" height="400">
+      <a class="back" href="index.html">← На главную</a>
+      <div class="hero-text">
+        <span class="hero-badge">Отдел ПСЭС · отпуска</span>
+        <h1>Отпуска сотрудников</h1>
+        <p class="subtitle">Списки IC- и OOC-отпусков отдела</p>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <div class="toolbar">
+        <div class="segments" role="group" aria-label="Тип отпуска">
+          <button type="button" class="segment is-active" data-type="ic" aria-pressed="true">
+            IC <span class="segment-count" data-count="ic">0</span>
+          </button>
+          <button type="button" class="segment" data-type="ooc" aria-pressed="false">
+            OOC <span class="segment-count" data-count="ooc">0</span>
+          </button>
+        </div>
+
+        <label class="search">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.6-3.6"></path>
+          </svg>
+          <input id="search" type="search" placeholder="Найти сотрудника или должность" autocomplete="off" aria-label="Поиск по списку отпусков">
+        </label>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-icon" aria-hidden="true">◆</span>
+          <div>
+            <strong id="statCount">0 сотрудников</strong>
+            <span class="stat-caption">сейчас в отпуске</span>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-icon" aria-hidden="true">◷</span>
+          <div>
+            <strong id="statNext">—</strong>
+            <span class="stat-caption">ближайшее возвращение</span>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-icon" aria-hidden="true">▦</span>
+          <div>
+            <strong id="statAvg">—</strong>
+            <span class="stat-caption">средняя длительность</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="add">
+        <button type="button" class="add-toggle" id="addToggle" aria-expanded="false" aria-controls="addForm">
+          <span class="add-plus" aria-hidden="true">+</span>
+          <span id="addToggleLabel">Добавить IC-отпуск</span>
+        </button>
+
+        <form class="add-form" id="addForm" novalidate hidden>
+          <div class="add-grid">
+            <label class="field">
+              <span class="field-label">Имя</span>
+              <input name="firstName" type="text" maxlength="40" autocomplete="off" placeholder="Иван" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Фамилия</span>
+              <input name="lastName" type="text" maxlength="40" autocomplete="off" placeholder="Иванов" required>
+            </label>
+            <label class="field">
+              <span class="field-label">ID сотрудника</span>
+              <input name="id" type="text" maxlength="32" autocomplete="off" placeholder="Например, PSES-012" title="Статический ID сотрудника — не меняется" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Должность <span class="field-opt">(необязательно)</span></span>
+              <input name="position" type="text" maxlength="60" autocomplete="off" placeholder="Главный врач">
+            </label>
+            <label class="field">
+              <span class="field-label">Дата начала</span>
+              <input name="from" type="date" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Дата конца</span>
+              <input name="to" type="date" required>
+            </label>
+          </div>
+          <p class="form-error" id="formError" role="alert" hidden></p>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Добавить</button>
+            <button type="button" class="btn-ghost" id="addCancel">Отмена</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="list-head">
+        <span>Список отпусков</span>
+        <span id="listCount" aria-live="polite">0 записей</span>
+      </div>
+
+      <section class="leave-list" id="leaveList" aria-label="Список отпусков"></section>
+
+      <div class="note">
+        <span class="note-dot" aria-hidden="true"></span>
+        <p>IC — отпуск в игре, OOC — вне игры. Даты указаны включительно. Записи, добавленные через форму, сохраняются в этом браузере.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Базовый список отпусков (необязательный).
+       Записи, добавленные через форму, сохраняются в localStorage этого браузера.
+       Если в localStorage уже есть данные, они имеют приоритет над этим массивом.
+       Формат записи:
+       { id: "PSES-012", firstName: "Иван", lastName: "Иванов",
+         position: "Должность", from: "2026-11-10", to: "2026-11-24", note: "Комментарий" }
+       from / to — даты в формате ГГГГ-ММ-ДД, обе включительно. id — статический. */
+    const STORAGE_KEY = "pses-leaves-v1";
+    const LEAVES = {
+      ic: [],
+      ooc: []
+    };
+
+    function loadStored() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object") return null;
+        return {
+          ic: Array.isArray(data.ic) ? data.ic : [],
+          ooc: Array.isArray(data.ooc) ? data.ooc : []
+        };
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function saveStored() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(LEAVES));
+      } catch (error) {
+        /* localStorage недоступен — данные останутся только до перезагрузки. */
+      }
+    }
+
+    const stored = loadStored();
+    if (stored) {
+      LEAVES.ic = stored.ic;
+      LEAVES.ooc = stored.ooc;
+    }
+
+    const MS_DAY = 86400000;
+    const STATUS_WEIGHT = { soon: 0, active: 0, planned: 1, done: 2 };
+    const STATUS_LABELS = {
+      active: "В отпуске",
+      soon: "Скоро возвращение",
+      planned: "Запланирован",
+      done: "Завершён"
+    };
+
+    const startOfDay = date => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const today = startOfDay(new Date());
+    const state = { type: "ic", query: "" };
+
+    function parseDate(value) {
+      const parts = String(value || "").split("-").map(Number);
+      if (parts.length !== 3 || parts.some(part => !Number.isFinite(part))) return null;
+
+      const date = new Date(parts[0], parts[1] - 1, parts[2]);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function plural(count, forms) {
+      const abs = Math.abs(count) % 100;
+      const last = abs % 10;
+      if (abs > 10 && abs < 20) return forms[2];
+      if (last > 1 && last < 5) return forms[1];
+      if (last === 1) return forms[0];
+      return forms[2];
+    }
+
+    const pad = value => String(value).padStart(2, "0");
+    const formatShort = date => `${pad(date.getDate())}.${pad(date.getMonth() + 1)}`;
+    const formatFull = date => `${formatShort(date)}.${date.getFullYear()}`;
+
+    function formatRange(from, to) {
+      if (from.getFullYear() === to.getFullYear()) {
+        return `${formatShort(from)} — ${formatFull(to)}`;
+      }
+      return `${formatFull(from)} — ${formatFull(to)}`;
+    }
+
+    function remainingText(daysLeft) {
+      if (daysLeft === 0) return "последний день";
+      if (daysLeft === 1) return "остался 1 день";
+      return `осталось ${daysLeft} ${plural(daysLeft, ["день", "дня", "дней"])}`;
+    }
+
+    function fullName(entry) {
+      const first = String((entry && entry.firstName) || "").trim();
+      const last = String((entry && entry.lastName) || "").trim();
+      const combined = [first, last].filter(Boolean).join(" ");
+      return combined || String((entry && entry.name) || "Без имени").trim();
+    }
+
+    function enrich(entry) {
+      const from = parseDate(entry && entry.from);
+      const to = parseDate(entry && entry.to);
+      if (!from || !to || to < from) return null;
+
+      const days = Math.round((to - from) / MS_DAY) + 1;
+      const daysToEnd = Math.round((to - today) / MS_DAY);
+      const daysToStart = Math.round((from - today) / MS_DAY);
+
+      let status;
+      let left;
+
+      if (daysToEnd < 0) {
+        status = "done";
+        left = "отпуск завершён";
+      } else if (daysToStart > 0) {
+        status = "planned";
+        left = daysToStart === 1
+          ? "начнётся завтра"
+          : `старт через ${daysToStart} ${plural(daysToStart, ["день", "дня", "дней"])}`;
+      } else if (daysToEnd <= 2) {
+        status = "soon";
+        left = remainingText(daysToEnd);
+      } else {
+        status = "active";
+        left = remainingText(daysToEnd);
+      }
+
+      return {
+        id: String((entry && entry.id) || "").trim(),
+        name: fullName(entry),
+        position: String(entry.position || "Сотрудник ПСЭС").trim(),
+        note: entry.note ? String(entry.note).trim() : "",
+        raw: entry,
+        from,
+        to,
+        days,
+        status,
+        left
+      };
+    }
+
+    function sortEntries(entries) {
+      return entries.slice().sort((a, b) => {
+        const diff = STATUS_WEIGHT[a.status] - STATUS_WEIGHT[b.status];
+        if (diff) return diff;
+        if (a.status === "done") return b.to - a.to;
+        if (a.status === "planned") return a.from - b.from;
+        return a.to - b.to;
+      });
+    }
+
+    function initials(name) {
+      return String(name)
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(word => word.charAt(0))
+        .join("")
+        .toUpperCase();
+    }
+
+    function metaItem(glyph, text, title) {
+      const item = document.createElement("span");
+      item.className = "meta-item";
+
+      const icon = document.createElement("span");
+      icon.className = "meta-glyph";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = glyph;
+
+      item.append(icon, document.createTextNode(text));
+      if (title) item.title = title;
+      return item;
+    }
+
+    function buildCard(entry, index) {
+      const card = document.createElement("article");
+      card.className = `leave-card status-${entry.status}`;
+      card.style.animationDelay = `${Math.min(index * 40, 240)}ms`;
+
+      const avatar = document.createElement("span");
+      avatar.className = "avatar";
+      avatar.setAttribute("aria-hidden", "true");
+      avatar.textContent = initials(entry.name);
+
+      const body = document.createElement("div");
+      body.className = "leave-body";
+
+      const head = document.createElement("div");
+      head.className = "leave-head";
+
+      const name = document.createElement("h3");
+      name.className = "leave-name";
+      name.textContent = entry.name;
+
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = STATUS_LABELS[entry.status];
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "card-del";
+      del.title = "Удалить запись";
+      del.setAttribute("aria-label", `Удалить: ${entry.name}`);
+      del.textContent = "×";
+      del.addEventListener("click", () => removeEntry(entry));
+
+      head.append(name, badge, del);
+
+      const position = document.createElement("p");
+      position.className = "leave-position";
+      position.textContent = entry.position;
+
+      const meta = document.createElement("div");
+      meta.className = "leave-meta";
+
+      const range = metaItem(
+        "▦",
+        formatRange(entry.from, entry.to),
+        `с ${formatFull(entry.from)} по ${formatFull(entry.to)}`
+      );
+
+      const days = document.createElement("span");
+      days.className = "meta-days";
+      days.textContent = `${entry.days} ${plural(entry.days, ["день", "дня", "дней"])}`;
+
+      const left = document.createElement("span");
+      left.className = "meta-left";
+      left.textContent = entry.left;
+
+      if (entry.id) meta.append(metaItem("#", entry.id, "Статический ID сотрудника"));
+      meta.append(range, days, left);
+      body.append(head, position, meta);
+
+      if (entry.note) {
+        const note = document.createElement("p");
+        note.className = "leave-note";
+        note.textContent = entry.note;
+        body.appendChild(note);
+      }
+
+      card.append(avatar, body);
+      return card;
+    }
+
+    function buildEmpty(hasRecords) {
+      const box = document.createElement("div");
+      box.className = "empty";
+
+      const art = document.createElement("img");
+      art.src = "assets/leaves-empty.svg";
+      art.alt = "";
+      art.width = 240;
+      art.height = 240;
+      art.setAttribute("aria-hidden", "true");
+
+      const title = document.createElement("h2");
+      title.textContent = hasRecords
+        ? "Ничего не найдено"
+        : `В ${state.type.toUpperCase()}-отпуске пока никого нет`;
+
+      const text = document.createElement("p");
+      text.textContent = hasRecords
+        ? "Попробуйте изменить запрос или очистить поиск."
+        : "Добавьте первую запись через форму выше.";
+
+      box.append(art, title, text);
+      return box;
+    }
+
+    function updateCounts() {
+      ["ic", "ooc"].forEach(type => {
+        const count = (LEAVES[type] || []).map(enrich).filter(Boolean).length;
+        const badge = document.querySelector(`.segment-count[data-count="${type}"]`);
+        if (badge) badge.textContent = count;
+      });
+    }
+
+    function updateTabs() {
+      document.querySelectorAll(".segment").forEach(button => {
+        const active = button.dataset.type === state.type;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      updateAddLabel();
+    }
+
+    function updateStats(entries) {
+      const current = entries.filter(entry => entry.status === "active" || entry.status === "soon");
+
+      const count = current.length;
+      document.getElementById("statCount").textContent =
+        `${count} ${plural(count, ["сотрудник", "сотрудника", "сотрудников"])}`;
+
+      const next = count
+        ? new Date(Math.min(...current.map(entry => entry.to.getTime())))
+        : null;
+      document.getElementById("statNext").textContent = next ? formatFull(next) : "—";
+
+      const average = count
+        ? Math.round(current.reduce((sum, entry) => sum + entry.days, 0) / count)
+        : null;
+      document.getElementById("statAvg").textContent = average
+        ? `${average} ${plural(average, ["день", "дня", "дней"])}`
+        : "—";
+    }
+
+    function render() {
+      const entries = (LEAVES[state.type] || []).map(enrich).filter(Boolean);
+      const sorted = sortEntries(entries);
+      const query = state.query.trim().toLowerCase();
+
+      const filtered = query
+        ? sorted.filter(entry =>
+            entry.name.toLowerCase().includes(query) ||
+            entry.id.toLowerCase().includes(query) ||
+            entry.position.toLowerCase().includes(query) ||
+            entry.note.toLowerCase().includes(query)
+          )
+        : sorted;
+
+      updateCounts();
+      updateTabs();
+      updateStats(entries);
+
+      const counter = document.getElementById("listCount");
+      if (!sorted.length) {
+        counter.textContent = "0 записей";
+      } else if (query) {
+        counter.textContent = `${filtered.length} из ${sorted.length}`;
+      } else {
+        counter.textContent = `${sorted.length} ${plural(sorted.length, ["запись", "записи", "записей"])}`;
+      }
+
+      const list = document.getElementById("leaveList");
+      list.innerHTML = "";
+
+      if (!filtered.length) {
+        list.appendChild(buildEmpty(sorted.length > 0));
+        return;
+      }
+
+      filtered.forEach((entry, index) => list.appendChild(buildCard(entry, index)));
+    }
+
+    function isoDate(date) {
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function removeEntry(entry) {
+      let changed = false;
+      ["ic", "ooc"].forEach(type => {
+        const list = LEAVES[type] || [];
+        const index = list.indexOf(entry.raw);
+        if (index >= 0) {
+          list.splice(index, 1);
+          changed = true;
+        }
+      });
+      if (changed) {
+        saveStored();
+        render();
+      }
+    }
+
+    const form = document.getElementById("addForm");
+    const formError = document.getElementById("formError");
+    const addToggle = document.getElementById("addToggle");
+    const addToggleLabel = document.getElementById("addToggleLabel");
+    const searchInput = document.getElementById("search");
+
+    const field = name => form.elements[name];
+
+    function typeLabel() {
+      return state.type.toUpperCase();
+    }
+
+    function hideError() {
+      formError.hidden = true;
+      formError.textContent = "";
+      form.querySelectorAll(".is-invalid").forEach(element => element.classList.remove("is-invalid"));
+    }
+
+    function showError(message, element) {
+      formError.textContent = message;
+      formError.hidden = false;
+      if (element) {
+        element.classList.add("is-invalid");
+        element.focus();
+      }
+    }
+
+    function setDefaultDates() {
+      const from = field("from");
+      const to = field("to");
+      if (!from.value) from.value = isoDate(today);
+      if (!to.value) to.value = isoDate(new Date(today.getTime() + 13 * MS_DAY));
+    }
+
+    function openForm() {
+      form.hidden = false;
+      addToggle.setAttribute("aria-expanded", "true");
+      setDefaultDates();
+      hideError();
+      field("firstName").focus();
+    }
+
+    function closeForm() {
+      form.hidden = true;
+      addToggle.setAttribute("aria-expanded", "false");
+      hideError();
+    }
+
+    function resetForm() {
+      form.reset();
+      hideError();
+    }
+
+    function updateAddLabel() {
+      addToggleLabel.textContent = `Добавить ${typeLabel()}-отпуск`;
+      if (!form.hidden) hideError();
+    }
+
+    addToggle.addEventListener("click", () => {
+      if (form.hidden) openForm();
+      else closeForm();
+    });
+
+    document.getElementById("addCancel").addEventListener("click", () => {
+      resetForm();
+      closeForm();
+    });
+
+    form.addEventListener("input", event => {
+      if (event.target.classList.contains("is-invalid")) {
+        event.target.classList.remove("is-invalid");
+      }
+    });
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      hideError();
+
+      const firstName = field("firstName").value.trim();
+      const lastName = field("lastName").value.trim();
+      const id = field("id").value.trim();
+      const fromValue = field("from").value;
+      const toValue = field("to").value;
+      const position = field("position").value.trim();
+
+      if (!firstName) return showError("Укажите имя.", field("firstName"));
+      if (!lastName) return showError("Укажите фамилию.", field("lastName"));
+      if (!id) return showError("Укажите статический ID сотрудника.", field("id"));
+
+      const from = parseDate(fromValue);
+      const to = parseDate(toValue);
+      if (!from) return showError("Укажите корректную дату начала.", field("from"));
+      if (!to) return showError("Укажите корректную дату конца.", field("to"));
+      if (to < from) return showError("Дата конца не может быть раньше даты начала.", field("to"));
+
+      const duplicate = (LEAVES[state.type] || []).some(entry =>
+        String(entry.id || "").trim().toLowerCase() === id.toLowerCase()
+      );
+      if (duplicate) {
+        return showError(`Сотрудник с ID «${id}» уже есть в списке ${typeLabel()}.`, field("id"));
+      }
+
+      LEAVES[state.type].push({
+        id,
+        firstName,
+        lastName,
+        position: position || "Сотрудник ПСЭС",
+        from: fromValue,
+        to: toValue
+      });
+
+      saveStored();
+
+      searchInput.value = "";
+      state.query = "";
+
+      resetForm();
+      render();
+      field("firstName").focus();
+    });
+
+    document.querySelectorAll(".segment").forEach(button => {
+      button.addEventListener("click", () => {
+        state.type = button.dataset.type;
+        render();
+      });
+    });
+
+    document.getElementById("search").addEventListener("input", event => {
+      state.query = event.target.value;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
