@@ -3,67 +3,232 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080d">
   <title>Информация о проверках — ПСЭС</title>
   <style>
     :root {
-      --bg: #080b11;
-      --card: #151922;
-      --card-light: #1d2330;
-      --border: #343d4d;
-      --text: #f1f4fa;
-      --muted: #a7adba;
-      --cyan: #31d7ff;
-      --purple: #7654df;
+      color-scheme: dark;
+
+      --bg: #08080d;
+      --card-top: rgba(33, 33, 45, .94);
+      --card-bottom: rgba(17, 17, 25, .96);
+      --border: rgba(255, 255, 255, .085);
+      --border-strong: rgba(255, 255, 255, .16);
+      --text: #ededf5;
+      --muted: #9c9cae;
+      --accent: #8b7cff;
+      --accent-2: #4be1c4;
+      --accent-strong: #6f5cf5;
+
+      --radius-lg: 24px;
+      --radius: 14px;
+      --shadow: 0 34px 90px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .06);
     }
 
     * { box-sizing: border-box; }
 
+    html { -webkit-text-size-adjust: 100%; }
+
     body {
-      min-height: 100vh;
       margin: 0;
-      padding: 28px 16px 50px;
-      color: var(--text);
+      min-height: 100vh;
+      padding: 44px 16px 76px;
       background:
-        radial-gradient(ellipse at 15% 0%, rgba(0, 177, 255, .14), transparent 38%),
+        radial-gradient(900px 520px at 10% -12%, rgba(139, 124, 255, .24), transparent 62%),
+        radial-gradient(820px 500px at 92% -4%, rgba(75, 225, 196, .15), transparent 58%),
+        radial-gradient(760px 720px at 50% 118%, rgba(111, 92, 245, .18), transparent 62%),
         var(--bg);
-      font-family: Arial, sans-serif;
+      color: var(--text);
+      font: 15px/1.5 "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
-    main {
+    .app {
+      position: relative;
       max-width: 980px;
       margin: 0 auto;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      z-index: 4;
+      height: 2px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+      opacity: .85;
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero-img {
+      display: block;
+      width: 100%;
+      height: 244px;
+      object-fit: cover;
+      object-position: center 52%;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(10, 10, 18, .5) 0%, rgba(10, 10, 18, .1) 30%, rgba(17, 17, 25, .74) 76%, rgba(17, 17, 25, .97) 100%),
+        radial-gradient(120% 95% at 50% 122%, rgba(139, 124, 255, .24), transparent 62%);
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      padding: 0 34px 22px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+      padding: 4px 12px;
+      border: 1px solid rgba(139, 124, 255, .38);
+      border-radius: 999px;
+      background: rgba(12, 12, 20, .5);
+      backdrop-filter: blur(10px);
+      color: #d7d2ff;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px var(--accent-2);
     }
 
     .back {
-      display: inline-block;
-      margin-bottom: 18px;
-      color: var(--cyan);
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 999px;
+      background: rgba(10, 10, 18, .52);
+      backdrop-filter: blur(10px);
+      color: #d4d4e4;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
     }
 
-    .back:hover { text-decoration: underline; }
+    .back:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .09);
+      border-color: var(--border-strong);
+      transform: translateX(-2px);
+      text-decoration: none;
+    }
 
-    header {
-      margin-bottom: 20px;
-      padding: 24px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background:
-        radial-gradient(ellipse at 90% 10%, rgba(49, 215, 255, .18), transparent 40%),
-        linear-gradient(135deg, #172235, #11151e);
-      box-shadow: 0 14px 40px rgba(0, 0, 0, .3);
+    .back:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .7);
+      outline-offset: 2px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(26px, 5vw, 38px);
+      margin: 0 0 6px;
+      color: #fff;
+      font-size: clamp(22px, 3.8vw, 28px);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -.025em;
+      text-align: center;
+      text-shadow: 0 2px 22px rgba(0, 0, 0, .7);
     }
 
-    header p {
-      margin: 0;
+    .subtitle {
+      margin: 0 auto;
+      max-width: 58ch;
+      color: rgba(236, 236, 245, .74);
+      font-size: 13.5px;
+      text-align: center;
+      text-shadow: 0 1px 12px rgba(0, 0, 0, .6);
+    }
+
+    .app-body { padding: 24px 30px 30px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .028);
+    }
+
+    .stat-icon {
+      display: grid;
+      flex: none;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(139, 124, 255, .22);
+      border-radius: 10px;
+      background: rgba(139, 124, 255, .12);
+      color: #cbc6ff;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 14.5px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-caption {
+      display: block;
+      margin-top: 1px;
       color: var(--muted);
-      line-height: 1.5;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
     }
 
     .schedule {
@@ -72,53 +237,137 @@
     }
 
     .check-card {
+      position: relative;
       display: grid;
-      grid-template-columns: 76px 1fr auto;
-      gap: 16px;
+      grid-template-columns: 62px minmax(0, 1fr) auto;
+      gap: 18px;
       align-items: center;
-      padding: 16px;
+      padding: 16px 18px;
       border: 1px solid var(--border);
-      border-radius: 15px;
-      background: linear-gradient(115deg, var(--card-light), var(--card));
-      box-shadow: 0 8px 22px rgba(0, 0, 0, .2);
+      border-radius: 16px;
+      background: linear-gradient(115deg, rgba(36, 36, 50, .92), rgba(18, 18, 26, .96));
+      box-shadow: 0 10px 26px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .04);
+      overflow: hidden;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
+
+    .check-card::before {
+      content: "";
+      position: absolute;
+      top: 18px;
+      bottom: 18px;
+      left: 0;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, var(--accent), var(--accent-2));
+      opacity: 0;
+      transition: opacity .2s ease;
+      pointer-events: none;
+    }
+
+    .check-card::after {
+      content: "";
+      position: absolute;
+      top: -70%;
+      right: -8%;
+      width: 240px;
+      height: 200px;
+      background: radial-gradient(closest-side, rgba(139, 124, 255, .26), transparent 72%);
+      opacity: 0;
+      transition: opacity .2s ease;
+      pointer-events: none;
+    }
+
+    .check-card:hover,
+    .check-card:focus-within {
+      transform: translateY(-2px);
+      border-color: rgba(139, 124, 255, .38);
+      box-shadow: 0 18px 38px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+
+    .check-card:hover::before,
+    .check-card:hover::after,
+    .check-card:focus-within::before,
+    .check-card:focus-within::after { opacity: 1; }
 
     .day {
       display: grid;
-      width: 64px;
-      height: 60px;
+      width: 58px;
+      height: 58px;
       place-items: center;
-      border: 1px solid rgba(49, 215, 255, .55);
-      border-radius: 12px;
-      background: rgba(22, 135, 190, .15);
-      color: var(--cyan);
+      border: 1px solid rgba(139, 124, 255, .4);
+      border-radius: 16px;
+      background: linear-gradient(160deg, rgba(139, 124, 255, .26), rgba(75, 225, 196, .1));
+      color: #dedaff;
       font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+    }
+
+    .info { min-width: 0; }
+
+    .label {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 10.5px;
       font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .org-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .org-icon {
+      display: grid;
+      flex: none;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid rgba(75, 225, 196, .2);
+      border-radius: 8px;
+      background: rgba(75, 225, 196, .1);
+      font-size: 14px;
+      line-height: 1;
     }
 
     .org {
-      font-size: 18px;
+      overflow: hidden;
+      font-size: 18.5px;
       font-weight: 700;
-    }
-
-    .label {
-      margin-bottom: 5px;
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
+      letter-spacing: -.01em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .time {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 6px 14px;
-      border: 1px solid rgba(49, 215, 255, .4);
-      border-radius: 20px;
-      background: rgba(33, 111, 163, .16);
-      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 9px;
+      padding: 5px 13px 5px 11px;
+      border: 1px solid rgba(75, 225, 196, .3);
+      border-radius: 999px;
+      background: rgba(75, 225, 196, .09);
+      color: #c8fff5;
+      font-size: 13.5px;
       font-weight: 700;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
+    }
+
+    .time::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 9px var(--accent-2);
     }
 
     .card-actions {
@@ -128,60 +377,148 @@
     }
 
     .copy-button {
-      min-width: 168px;
-      padding: 9px 12px;
-      border: 0;
-      border-radius: 9px;
-      background: var(--purple);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-width: 196px;
+      padding: 9px 14px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #8577ff, var(--accent-strong));
       color: #fff;
       cursor: pointer;
       font: inherit;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       white-space: nowrap;
-      transition: background .15s ease, transform .15s ease;
+      box-shadow: 0 8px 18px rgba(111, 92, 245, .28);
+      transition: transform .16s ease, filter .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
     }
 
     .copy-button:hover {
       transform: translateY(-1px);
-      background: #6341d0;
+      filter: brightness(1.07);
+      box-shadow: 0 12px 24px rgba(111, 92, 245, .38);
+    }
+
+    .copy-button:active {
+      transform: translateY(0);
+      filter: brightness(.98);
+    }
+
+    .copy-button:focus-visible {
+      outline: 2px solid rgba(139, 124, 255, .8);
+      outline-offset: 2px;
     }
 
     .copy-button.secondary {
-      border: 1px solid rgba(49, 215, 255, .45);
-      background: #153347;
+      border-color: rgba(75, 225, 196, .32);
+      background: rgba(75, 225, 196, .08);
+      color: #c9fff5;
+      box-shadow: none;
     }
 
-    .copy-button.secondary:hover { background: #1b4b66; }
+    .copy-button.secondary:hover {
+      border-color: rgba(75, 225, 196, .5);
+      background: rgba(75, 225, 196, .15);
+      box-shadow: 0 10px 22px rgba(31, 157, 138, .18);
+    }
 
     .note {
-      margin-top: 20px;
-      padding: 14px 16px;
-      border-left: 3px solid var(--purple);
-      border-radius: 8px;
-      background: var(--card);
-      color: var(--muted);
-      font-size: 14px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      padding: 14px 18px;
+      border: 1px solid rgba(139, 124, 255, .2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(139, 124, 255, .12), rgba(75, 225, 196, .05));
+      color: #c3c3d6;
+      font-size: 13.5px;
       line-height: 1.5;
+      overflow: hidden;
+    }
+
+    .note-dot {
+      flex: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px var(--accent-2);
+    }
+
+    .note p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 62ch;
+    }
+
+    .note-art {
+      position: absolute;
+      top: -52px;
+      right: -22px;
+      width: 168px;
+      height: 168px;
+      opacity: .16;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(circle at 55% 45%, #000 26%, transparent 70%);
+      mask-image: radial-gradient(circle at 55% 45%, #000 26%, transparent 70%);
+    }
+
+    ::selection {
+      background: rgba(139, 124, 255, .35);
+      color: #fff;
+    }
+
+    * { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .16) transparent; }
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .16);
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .26); }
+
+    @media (max-width: 760px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat:last-child { grid-column: 1 / -1; }
     }
 
     @media (max-width: 640px) {
-      body { padding: 18px 12px 36px; }
-      header { padding: 20px; }
+      body { padding: 22px 12px 52px; }
+      .app { border-radius: 20px; }
+      .hero-img { height: 196px; }
+      .hero-text { padding: 0 18px 16px; }
+      .back { top: 12px; left: 12px; padding: 6px 12px; }
+      .app-body { padding: 18px 16px 22px; }
+      h1 { font-size: 21px; }
+      .subtitle { font-size: 12.5px; }
+      .stats { gap: 8px; margin-bottom: 14px; }
+      .stat { padding: 10px 11px; gap: 9px; }
+      .stat strong { font-size: 13px; }
+      .stat-icon { width: 30px; height: 30px; font-size: 13px; }
 
       .check-card {
-        grid-template-columns: 56px 1fr;
-        gap: 12px;
+        grid-template-columns: 50px minmax(0, 1fr);
+        gap: 10px 12px;
         padding: 13px;
+        border-radius: 14px;
       }
 
       .day {
-        width: 52px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
+        border-radius: 13px;
         font-size: 14px;
       }
 
-      .org { font-size: 16px; }
+      .org { font-size: 16.5px; }
+      .time { margin-top: 7px; font-size: 12.5px; }
 
       .card-actions {
         grid-column: 1 / -1;
@@ -190,28 +527,68 @@
       }
 
       .copy-button {
-        flex: 1 1 140px;
+        flex: 1 1 150px;
         min-width: 0;
+        padding: 9px 10px;
+        font-size: 12px;
         white-space: normal;
       }
+
+      .note { font-size: 12.5px; padding: 12px 14px; }
+      .note-art { width: 132px; height: 132px; top: -42px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <a class="back" href="index.html">← На главную</a>
-
-    <header>
-      <h1>Информация о проверках</h1>
-      <p>Расписание проверок организаций ПСЭС. Используйте кнопки рядом с нужной организацией.</p>
+  <div class="app">
+    <header class="hero">
+      <img class="hero-img" src="assets/checks-hero.svg" alt="Кабинет отдела ПСЭС: доска с расписанием проверок, чек-лист и печать" width="1200" height="400">
+      <a class="back" href="index.html">← На главную</a>
+      <div class="hero-text">
+        <span class="hero-badge">Отдел ПСЭС · проверки</span>
+        <h1>Информация о проверках</h1>
+        <p class="subtitle">Расписание проверок организаций и готовые тексты для Discord и /dep</p>
+      </div>
     </header>
 
-    <section class="schedule" id="schedule" aria-label="Расписание проверок"></section>
+    <div class="app-body">
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-icon" aria-hidden="true">◆</span>
+          <div>
+            <strong>7 организаций</strong>
+            <span class="stat-caption">в расписании</span>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-icon" aria-hidden="true">▦</span>
+          <div>
+            <strong>6 дней</strong>
+            <span class="stat-caption">Пн — Сб</span>
+          </div>
+        </div>
+        <div class="stat">
+          <span class="stat-icon" aria-hidden="true">◷</span>
+          <div>
+            <strong>17:00 — 20:30</strong>
+            <span class="stat-caption">время проверок</span>
+          </div>
+        </div>
+      </div>
 
-    <div class="note">
-      Время указано по расписанию проверок.
+      <section class="schedule" id="schedule" aria-label="Расписание проверок"></section>
+
+      <div class="note">
+        <img class="note-art" src="assets/checks-note.svg" alt="" aria-hidden="true" width="240" height="240">
+        <span class="note-dot" aria-hidden="true"></span>
+        <p>Время указано по расписанию проверок.</p>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script>
     const hospitalDiscordText = `<@&1538939093151653944> <@&1544008424373751818>
@@ -348,6 +725,17 @@
       }
     ];
 
+    /* Тематические иконки организаций (только оформление). */
+    const ORGANIZATION_ICONS = {
+      "Больница": "🏥",
+      "Армия": "🎖️",
+      "Вести Москвы": "📺",
+      "ФСБ": "🛡️",
+      "МВД": "🚔",
+      "Правительство": "🏛️",
+      "ГИБДД": "🚦"
+    };
+
     async function copyText(text, button, originalLabel) {
       let copied = false;
 
@@ -391,22 +779,34 @@
       const day = document.createElement("div");
       day.className = "day";
       day.textContent = item.short;
+      day.setAttribute("aria-label", item.day);
 
       const info = document.createElement("div");
+      info.className = "info";
 
       const label = document.createElement("div");
       label.className = "label";
       label.textContent = "Организация";
 
+      const orgRow = document.createElement("div");
+      orgRow.className = "org-row";
+
+      const orgIcon = document.createElement("span");
+      orgIcon.className = "org-icon";
+      orgIcon.textContent = ORGANIZATION_ICONS[item.organization] || "◆";
+      orgIcon.setAttribute("aria-hidden", "true");
+
       const organization = document.createElement("div");
       organization.className = "org";
       organization.textContent = item.organization;
+
+      orgRow.append(orgIcon, organization);
 
       const time = document.createElement("div");
       time.className = "time";
       time.textContent = item.time;
 
-      info.append(label, organization, time);
+      info.append(label, orgRow, time);
 
       const actions = document.createElement("div");
       actions.className = "card-actions";
