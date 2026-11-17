@@ -1317,6 +1317,11 @@
       state.points = defaultPoints();
       state.dutyIntervals = [{ start: "", end: "" }];
 
+      state.name = "";
+      state.staticId = "";
+      document.getElementById("name").value = "";
+      document.getElementById("staticId").value = "";
+
       save();
       buildDutyRows();
       buildFields();
