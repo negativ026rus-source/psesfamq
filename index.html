@@ -3,124 +3,333 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08080d">
   <title>ПСЭС — панель Пэпсиков</title>
   <style>
+    :root {
+      color-scheme: dark;
+
+      --bg: #08080d;
+      --text: #ededf5;
+      --muted: #9c9cae;
+      --accent: #8b7cff;
+      --accent-2: #4be1c4;
+      --radius: 22px;
+
+      --violet: #6f5cf5;
+      --teal: #1f9d8a;
+    }
+
     * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
 
     body {
       min-height: 100vh;
       margin: 0;
-      padding: 30px;
-      color: #fff;
-      background: #080b11;
-      font-family: Arial, sans-serif;
+      padding: 56px 20px 72px;
+      background:
+        radial-gradient(900px 520px at 8% -10%, rgba(139, 124, 255, .22), transparent 62%),
+        radial-gradient(760px 460px at 96% 2%, rgba(75, 225, 196, .12), transparent 58%),
+        radial-gradient(700px 640px at 50% 118%, rgba(111, 92, 245, .16), transparent 62%),
+        var(--bg);
+      color: var(--text);
+      font: 16px/1.5 "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
     main {
-      max-width: 1180px;
+      max-width: 1120px;
       margin: 0 auto;
     }
 
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 13px;
+      border: 1px solid rgba(139, 124, 255, .28);
+      border-radius: 999px;
+      background: rgba(139, 124, 255, .1);
+      color: #cbc6ff;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      box-shadow: 0 0 12px var(--accent-2);
+    }
+
     h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
+      margin: 18px 0 10px;
+      font-size: clamp(26px, 4.4vw, 38px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      background: linear-gradient(180deg, #fff, #c7c7e2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .subtitle {
-      margin: 0 0 28px;
-      color: #a7adba;
+      max-width: 54ch;
+      margin: 0 0 34px;
+      color: var(--muted);
+      font-size: 15.5px;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
     }
 
     .card {
+      position: relative;
       display: flex;
-      min-height: 215px;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 22px;
-      border: 1px solid #454956;
-      border-radius: 18px;
-      background:
-        radial-gradient(ellipse at 85% 15%, rgba(131, 88, 210, .35), transparent 48%),
-        linear-gradient(135deg, #333744, #191c25 75%);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: var(--radius);
+      background: linear-gradient(165deg, rgba(41, 41, 56, .96), rgba(17, 17, 25, .98));
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .05);
       color: inherit;
       text-decoration: none;
-      transition: transform .18s ease, border-color .18s ease;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #9b81ff;
+    /* Градиентная «рамка», проявляется при наведении. */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      border-radius: inherit;
+      background: linear-gradient(150deg, rgba(139, 124, 255, .9), rgba(75, 225, 196, .45));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity .25s ease;
+      pointer-events: none;
     }
+
+    /* Мягкое свечение внутри карточки. */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: -45% -15% auto;
+      height: 240px;
+      background: radial-gradient(closest-side, var(--glow, rgba(139, 124, 255, .34)), transparent 72%);
+      opacity: 0;
+      transition: opacity .25s ease;
+      pointer-events: none;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-6px);
+      border-color: transparent;
+      box-shadow: 0 30px 64px rgba(0, 0, 0, .52);
+      outline: none;
+    }
+
+    .card:hover::before,
+    .card:hover::after,
+    .card:focus-visible::before,
+    .card:focus-visible::after { opacity: 1; }
+
+    .card.calc {
+      --glow: rgba(139, 124, 255, .34);
+      --tile: linear-gradient(150deg, #8d7fff, #5b4be0);
+      --tile-shadow: rgba(111, 92, 245, .42);
+    }
+
+    .card.checks {
+      --glow: rgba(75, 225, 196, .26);
+      --tile: linear-gradient(150deg, #4be1c4, var(--teal));
+      --tile-shadow: rgba(31, 157, 138, .4);
+    }
+
+    .card-media {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      background: #0f0f19;
+    }
+
+    .card-media img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.02);
+      transition: transform .5s ease;
+    }
+
+    .card-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(10, 10, 18, 0) 40%, rgba(21, 21, 31, .97) 100%);
+      pointer-events: none;
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: 0 26px 26px;
+    }
+
+    .card-body .icon { margin-top: -46px; }
+
+    .card:hover .card-media img,
+    .card:focus-visible .card-media img { transform: scale(1.07); }
 
     .icon {
       display: grid;
-      width: 44px;
-      height: 44px;
+      width: 50px;
+      height: 50px;
       place-items: center;
-      border-radius: 12px;
-      background: #7654df;
-      font-size: 23px;
+      border-radius: 15px;
+      background: var(--tile);
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      box-shadow: 0 10px 24px var(--tile-shadow), inset 0 1px 0 rgba(255, 255, 255, .38);
     }
 
     .card h2 {
-      margin: 20px 0 6px;
-      font-size: 23px;
+      margin: 22px 0 8px;
+      font-size: 22px;
+      font-weight: 750;
+      letter-spacing: -.01em;
     }
 
     .card p {
       margin: 0;
-      color: #d0d2da;
-      font-size: 14px;
-      line-height: 1.5;
+      color: #b8b8c8;
+      font-size: 14.5px;
+      line-height: 1.55;
     }
 
     .button {
-      align-self: flex-start;
-      margin-top: 18px;
-      padding: 11px 16px;
-      border-radius: 9px;
-      background: #7654df;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 24px;
+      color: #cec9ff;
       font-size: 14px;
       font-weight: 700;
+      transition: color .2s ease;
     }
 
-    @media (max-width: 500px) {
-      body { padding: 20px 14px; }
-      .card { min-height: 195px; }
+    .arrow {
+      display: inline-block;
+      transition: transform .2s ease;
+    }
+
+    .card:hover .button,
+    .card:focus-visible .button { color: #fff; }
+
+    .card:hover .arrow,
+    .card:focus-visible .arrow { transform: translateX(4px); }
+
+    .foot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      color: #7e7e91;
+      font-size: 12.5px;
+      letter-spacing: .01em;
+      text-align: center;
+    }
+
+    .version {
+      padding: 5px 13px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .04);
+      color: #b3b3c6;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .05em;
+    }
+
+    @media (max-width: 540px) {
+      body { padding: 34px 14px 52px; }
+      h1 { margin-top: 16px; }
+      .subtitle { margin-bottom: 26px; font-size: 14.5px; }
+      .cards { gap: 14px; }
+      .card { border-radius: 18px; }
+      .card-body { padding: 0 22px 22px; }
+      .card h2 { font-size: 20px; }
+      .button { padding-top: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
     }
   </style>
 </head>
 <body>
   <main>
+    <span class="eyebrow">ПСЭС · внутренние инструменты</span>
     <h1>Панель инструментов для Пэпсиков</h1>
     <p class="subtitle">Выберите нужный раздел</p>
 
     <section class="cards">
-      <a class="card" href="calculator.html">
-        <span class="icon">✚</span>
-        <div>
-          <h2>Калькулятор ПСЭС</h2>
-          <p>Расчёт баллов, дежурств и требований к отчёту</p>
+      <a class="card calc" href="calculator.html">
+        <div class="card-media">
+          <img src="assets/pses-hospital.svg" alt="Отделение ПСЭС — больница ночью" width="640" height="360" loading="lazy">
         </div>
-        <span class="button">Перейти →</span>
+        <div class="card-body">
+          <span class="icon">✚</span>
+          <div>
+            <h2>Калькулятор ПСЭС</h2>
+            <p>Расчёт баллов, дежурств и требований к отчёту</p>
+          </div>
+          <span class="button">Перейти <span class="arrow">→</span></span>
+        </div>
       </a>
 
-      <a class="card" href="checks.html">
-        <span class="icon">◆</span>
-        <div>
-          <h2>Информация о проверках</h2>
-          <p>Расписание проверок организаций ПСЭС</p>
+      <a class="card checks" href="checks.html">
+        <div class="card-media">
+          <img src="assets/pses-checks.svg" alt="Проверки отчётов и документации ПСЭС" width="640" height="360" loading="lazy">
         </div>
-        <span class="button">Перейти →</span>
+        <div class="card-body">
+          <span class="icon">◆</span>
+          <div>
+            <h2>Информация о проверках</h2>
+            <p>Расписание проверок организаций ПСЭС</p>
+          </div>
+          <span class="button">Перейти <span class="arrow">→</span></span>
+        </div>
       </a>
     </section>
+
+    <footer class="foot">
+      <span>Внутренний инструмент ПСЭС · ссылки открываются в этом же окне</span>
+      <span class="version">Версия 1.2</span>
+    </footer>
   </main>
 </body>
 </html>
