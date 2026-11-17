@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Медицинский крест и кардиограмма">
+  <defs>
+    <linearGradient id="cross" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#4be1c4"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7cff" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#4be1c4" stop-opacity=".2"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="120" cy="120" r="86" fill="none" stroke="url(#ring)" stroke-width="2" stroke-dasharray="6 8"/>
+  <circle cx="120" cy="120" r="66" fill="none" stroke="url(#ring)" stroke-width="1.5" opacity=".6"/>
+
+  <g filter="url(#soft)" opacity=".95">
+    <path d="M104 60 h32 v32 h32 v32 h-32 v32 h-32 v-32 H72 V92 h32 Z" fill="url(#cross)"/>
+  </g>
+
+  <path d="M40 150 h30 l8 -14 l10 26 l12 -38 l10 26 h16"
+    fill="none" stroke="#4be1c4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+    opacity=".65"/>
+  <path d="M150 96 h22 l8 -12 l10 24 l12 -34 l10 22 h18"
+    fill="none" stroke="#8b7cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+    opacity=".45"/>
+
+  <g fill="#4be1c4">
+    <circle cx="196" cy="176" r="2" opacity=".55"/>
+    <circle cx="48" cy="86" r="1.6" opacity=".45"/>
+  </g>
+</svg>
