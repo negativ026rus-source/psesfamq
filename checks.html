@@ -290,11 +290,32 @@
     .check-card:focus-within::before,
     .check-card:focus-within::after { opacity: 1; }
 
+    /* Карточка проверки, выпадающей на сегодня */
+    .check-card.today {
+      border-color: rgba(75, 225, 196, .55);
+      background: linear-gradient(115deg, rgba(40, 54, 66, .96), rgba(16, 26, 32, .97));
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .36), 0 0 0 1px rgba(75, 225, 196, .12), inset 0 1px 0 rgba(255, 255, 255, .08);
+    }
+
+    .check-card.today::before {
+      opacity: 1;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+    }
+
+    .check-card.today .day {
+      border-color: rgba(75, 225, 196, .65);
+      background: linear-gradient(160deg, rgba(75, 225, 196, .34), rgba(139, 124, 255, .16));
+      color: #dbfff7;
+      box-shadow: 0 0 22px rgba(75, 225, 196, .24), inset 0 1px 0 rgba(255, 255, 255, .16);
+    }
+
     .day {
       display: grid;
       width: 58px;
       height: 58px;
+      align-content: center;
       place-items: center;
+      gap: 2px;
       border: 1px solid rgba(139, 124, 255, .4);
       border-radius: 16px;
       background: linear-gradient(160deg, rgba(139, 124, 255, .26), rgba(75, 225, 196, .1));
@@ -304,6 +325,17 @@
       letter-spacing: .06em;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
     }
+
+    .day-badge {
+      display: none;
+      color: #b6fff1;
+      font-size: 6.5px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      line-height: 1;
+    }
+
+    .check-card.today .day-badge { display: block; }
 
     .info { min-width: 0; }
 
@@ -770,16 +802,27 @@
       }
     }
 
+    const WEEKDAY_NAMES = [
+      "Воскресенье", "Понедельник", "Вторник", "Среда",
+      "Четверг", "Пятница", "Суббота"
+    ];
+
     const container = document.getElementById("schedule");
 
     schedule.forEach(item => {
       const card = document.createElement("article");
       card.className = "check-card";
+      card.dataset.day = item.day;
 
       const day = document.createElement("div");
       day.className = "day";
       day.textContent = item.short;
       day.setAttribute("aria-label", item.day);
+
+      const dayBadge = document.createElement("span");
+      dayBadge.className = "day-badge";
+      dayBadge.textContent = "СЕГОДНЯ";
+      day.append(dayBadge);
 
       const info = document.createElement("div");
       info.className = "info";
@@ -844,6 +887,17 @@
       card.append(day, info, actions);
       container.appendChild(card);
     });
+
+    function updateTodayHighlight() {
+      const currentDay = WEEKDAY_NAMES[new Date().getDay()];
+
+      container.querySelectorAll(".check-card").forEach(card => {
+        card.classList.toggle("today", card.dataset.day === currentDay);
+      });
+    }
+
+    updateTodayHighlight();
+    setInterval(updateTodayHighlight, 60000);
   </script>
 </body>
 </html>
