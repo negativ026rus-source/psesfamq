@@ -161,6 +161,12 @@
       --tile-shadow: rgba(31, 157, 138, .4);
     }
 
+    .card.leaves {
+      --glow: rgba(139, 124, 255, .28);
+      --tile: linear-gradient(150deg, #8d7fff, #2bb39c);
+      --tile-shadow: rgba(75, 225, 196, .3);
+    }
+
     .card-media {
       position: relative;
       overflow: hidden;
@@ -299,7 +305,7 @@
     <section class="cards">
       <a class="card calc" href="calculator.html">
         <div class="card-media">
-          <img src="assets/pses-hospital.svg" alt="Отделение ПСЭС — больница ночью" width="640" height="360" loading="lazy">
+          <img src="assets/pses-hospital.svg" alt="Отделение ПСЭС — больница ночью" width="640" height="360">
         </div>
         <div class="card-body">
           <span class="icon">✚</span>
@@ -313,7 +319,7 @@
 
       <a class="card checks" href="checks.html">
         <div class="card-media">
-          <img src="assets/pses-checks.svg" alt="Проверки отчётов и документации ПСЭС" width="640" height="360" loading="lazy">
+          <img src="assets/pses-checks.svg" alt="Проверки отчётов и документации ПСЭС" width="640" height="360">
         </div>
         <div class="card-body">
           <span class="icon">◆</span>
@@ -324,11 +330,25 @@
           <span class="button">Перейти <span class="arrow">→</span></span>
         </div>
       </a>
+
+      <a class="card leaves" href="leaves.html">
+        <div class="card-media">
+          <img src="assets/leaves-card.svg" alt="Отпуск сотрудников ПСЭС: чемодан и море" width="640" height="360">
+        </div>
+        <div class="card-body">
+          <span class="icon">☀</span>
+          <div>
+            <h2>Отпуска сотрудников</h2>
+            <p>Списки IC- и OOC-отпусков отдела</p>
+          </div>
+          <span class="button">Перейти <span class="arrow">→</span></span>
+        </div>
+      </a>
     </section>
 
     <footer class="foot">
       <span>Внутренний инструмент ПСЭС · ссылки открываются в этом же окне</span>
-      <span class="version">Версия 1.2</span>
+      <span class="version">Версия 2.1</span>
     </footer>
   </main>
 </body>
